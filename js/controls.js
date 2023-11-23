@@ -12,7 +12,7 @@ function Controls(lorenz) {
         return lorenz.params.beta = value;
     })(lorenz.params.beta);
     var rho = this.bind('#rho', '#rho-label', function(value) {
-        return lorenz.params.sigma = value;
+        return lorenz.params.rho = value;
     })(lorenz.params.rho);
 
     this.set_sigma = function(value) {

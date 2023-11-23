@@ -18,7 +18,7 @@ mat4 view_scale(float x, float y, float z)
 {
     return mat4(
         vec4(x,   0.0, 0.0, 0.0),
-        vec4(0.0, y,   0.0, 0.0),
+        vec4(0.0, -y,   0.0, 0.0), //!!!
         vec4(0.0, 0.0, z,   0.0),
         vec4(0.0, 0.0, 0.0, 1.0)
     );

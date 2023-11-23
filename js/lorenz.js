@@ -15,14 +15,14 @@ function Lorenz(canvas) {
     this.params = {
         sigma: 10,
         beta: 8 / 3,
-        rho: 28,
+        rho: 28 ,
         step_size: 0.002,
         steps_per_frame: 3,
         paused: false
     };
     this.display = {
-        scale: 1 / 25,
-        rotation: [1.65, 3.08, -0.93],
+        scale: 1 / 25, 
+        rotation: [1.4, 3.08, -2.5],
         rotationd: [0, 0, 0],
         translation: [0, 0.075, 1.81],
         draw_heads: false,
@@ -49,11 +49,14 @@ function Lorenz(canvas) {
         './glsl/tail.vert',
         './glsl/tail.frag',
         './glsl/head.vert',
-        './glsl/head.frag'
+        './glsl/head.frag',
+        './glsl/axes.vert',
+        './glsl/axes.frag'
     ];
-    Lorenz.fetch(shaders, function(project, tail_v, tail_f, head_v, head_f) {
+    Lorenz.fetch(shaders, function(project, tail_v, tail_f, head_v, head_f, axes_v, axes_f) {
         this.programs.tail = Lorenz.compile(gl, project + tail_v, tail_f);
         this.programs.head = Lorenz.compile(gl, project + head_v, head_f);
+        this.programs.axes = Lorenz.compile(gl, project + axes_v, axes_f);
         /* Both use two attrib arrays, so just turn them on now. */
         gl.enableVertexAttribArray(0);
         gl.enableVertexAttribArray(1);
@@ -65,6 +68,22 @@ function Lorenz(canvas) {
     this.accum = 0;
     this.second = Math.floor(Date.now() / 1000);
     this.ready = false;
+
+    // 坐标轴绘制，每个坐标轴由两个点组成：起点和终点
+    var unit = this.params.rho;
+    // var unit = 1; 
+    this.axes = [
+        [0,0,0, unit,0,0],
+        [0,0,0, 0,unit,0],
+        [0,0,0, 0,0,unit]
+    ]
+    this.axes_colors = [ // 坐标轴颜色，作为uniform变量传入
+        [1,0,0],
+        [0,1,0],
+        [0,0,1]
+    ]
+    // 创建axes绘制相关的buffer
+    this.axes_buffer = gl.createBuffer();
 }
 
 /**
@@ -409,6 +428,29 @@ Lorenz.prototype.draw = function() {
         gl.uniform3fv(uniform.translation, translation);
         gl.uniform1f(uniform.rho, rho);
         gl.drawArrays(gl.POINTS, 0, count);
+    }
+
+    if (true) { //draw axes
+        for (var i = 0; i < this.axes.length; i++) {
+            gl.useProgram(this.programs.axes.program);
+            var attrib = this.programs.axes.attrib;
+            var uniform = this.programs.axes.uniform;
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.axes_buffer);
+            
+            gl.uniform1f(uniform.aspect, aspect);
+            gl.uniform1f(uniform.scale, scale);
+            gl.uniform3fv(uniform.rotation, rotation);
+            gl.uniform3fv(uniform.translation, translation);
+            gl.uniform1f(uniform.rho, rho);
+        
+        
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.axes[i]), gl.STATIC_DRAW);
+            gl.vertexAttribPointer(attrib.point, 3, gl.FLOAT, false, 0, 0);
+
+            gl.uniform3fv(uniform.color, this.axes_colors[i]);
+            gl.drawArrays(gl.LINES, 0, 2);
+        }
     }
 
     return this;
