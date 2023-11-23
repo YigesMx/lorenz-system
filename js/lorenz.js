@@ -45,11 +45,11 @@ function Lorenz(canvas) {
 
     this.programs = {};
     var shaders = [
-        'glsl/project.vert',
-        'glsl/tail.vert',
-        'glsl/tail.frag',
-        'glsl/head.vert',
-        'glsl/head.frag'
+        './glsl/project.vert',
+        './glsl/tail.vert',
+        './glsl/tail.frag',
+        './glsl/head.vert',
+        './glsl/head.frag'
     ];
     Lorenz.fetch(shaders, function(project, tail_v, tail_f, head_v, head_f) {
         this.programs.tail = Lorenz.compile(gl, project + tail_v, tail_f);
@@ -179,19 +179,18 @@ Lorenz.generate = function() {
  */
 Lorenz.color = function(i) {
     var colors = [
-        0x8d, 0xd3, 0xc7,
-        0xff, 0xff, 0xb3,
-        0xbe, 0xba, 0xda,
-        0xfb, 0x80, 0x72,
-        0x80, 0xb1, 0xd3,
-        0xfd, 0xb4, 0x62,
-        0xb3, 0xde, 0x69,
-        0xfc, 0xcd, 0xe5,
-        0xd9, 0xd9, 0xd9,
-        0xbc, 0x80, 0xbd,
-        0xcc, 0xeb, 0xc5,
-        0xff, 0xed, 0x6f,
-        0xff, 0xff, 0xff
+        184, 233, 148,
+        120, 224, 143,
+        56, 173, 169,
+        10, 61, 98,
+
+        130, 204, 221,
+        96, 163, 188,
+        60, 99, 130,
+        10, 61, 98,
+
+        106, 137, 204,
+        74, 105, 189
     ];
     var base = (i * 3) % colors.length;
     return colors.slice(base, base + 3).map(function(x) { return x / 255; });
