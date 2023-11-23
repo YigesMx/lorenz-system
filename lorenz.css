@@ -71,3 +71,11 @@ canvas {
     font-weight: bold;
     font-size: 14px;
 }
+
+.input-box {
+    width: 80px;
+}
+
+.label {
+    width: 40px;
+}

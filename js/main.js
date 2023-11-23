@@ -4,6 +4,10 @@ var controls = null;
 window.addEventListener('load', function() {
     var canvas = document.querySelector('#lorenz');
     lorenz = Lorenz.run(canvas);
+    changeParam('length-input', lorenz.params.length);
+    changeParam('sigma-input', lorenz.params.sigma);
+    changeParam('beta-input', lorenz.params.beta);
+    changeParam('rho-input', lorenz.params.rho);
     controls = new Controls(lorenz);
 
     window.addEventListener('keypress', function(e) {
@@ -27,7 +31,10 @@ window.addEventListener('load', function() {
     controls.listeners.push(update_stats);
 
     var preset = document.querySelector('#preset');
-    preset.addEventListener('change', function() {
+    preset.addEventListener('input', function() {
+    // var preset = document.getElementById('preset');
+    // preset.addEventListener('input', function() {
+        console.log(preset.value);
         if (preset.value === 'chaos') {
             controls.clear();
             controls.add();
@@ -50,3 +57,21 @@ window.addEventListener('load', function() {
         }
     });
 });
+
+function changePreset(option) {
+    var preset = document.getElementById('preset');
+    preset.value = option;
+
+    // 创建并触发一个新的 'input' 事件
+    var event = new Event('input', { bubbles: true });
+    preset.dispatchEvent(event);
+}
+
+function changeParam(id, value) {
+    var param = document.getElementById(id);
+    param.value = value;
+
+    // 创建并触发一个新的 'input' 事件
+    var event = new Event('input', { bubbles: true });
+    param.dispatchEvent(event);
+}

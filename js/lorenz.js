@@ -14,7 +14,7 @@ function Lorenz(canvas) {
 
     this.params = {
         sigma: 10,
-        beta: 8 / 3,
+        beta: parseFloat((8 / 3).toFixed(6)),
         rho: 28 ,
         step_size: 0.002,
         steps_per_frame: 3,
@@ -69,14 +69,6 @@ function Lorenz(canvas) {
     this.second = Math.floor(Date.now() / 1000);
     this.ready = false;
 
-    // 坐标轴绘制，每个坐标轴由两个点组成：起点和终点
-    var unit = this.params.rho;
-    // var unit = 1; 
-    this.axes = [
-        [0,0,0, unit,0,0],
-        [0,0,0, 0,unit,0],
-        [0,0,0, 0,0,unit]
-    ]
     this.axes_colors = [ // 坐标轴颜色，作为uniform变量传入
         [1,0,0],
         [0,1,0],
@@ -431,6 +423,15 @@ Lorenz.prototype.draw = function() {
     }
 
     if (true) { //draw axes
+        
+        var unit = this.params.rho;
+        // var unit = 1; 
+        this.axes = [
+            [0,0,0, unit,0,0],
+            [0,0,0, 0,unit,0],
+            [0,0,0, 0,0,unit]
+        ]
+
         for (var i = 0; i < this.axes.length; i++) {
             gl.useProgram(this.programs.axes.program);
             var attrib = this.programs.axes.attrib;
