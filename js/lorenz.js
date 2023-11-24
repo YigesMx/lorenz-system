@@ -85,9 +85,9 @@ function Lorenz(canvas) {
     this.ready = false;
 
     this.axes_colors = [ // 坐标轴颜色，作为uniform变量传入
-        [1,0,0],
-        [0,1,0],
-        [0,0,1]
+        [235/255, 47/255, 6/255],
+        [250/255, 211/255, 144/255],
+        [250/255, 152/255, 58/255]
     ]
     // 创建axes绘制相关的buffer
     this.axes_buffer = gl.createBuffer();
@@ -593,7 +593,7 @@ Object.defineProperty(Lorenz.prototype, 'length', {
  */
 Lorenz.run = function(canvas) {
     var lorenz = new Lorenz(canvas);
-    for (var i = 0; i < 13; i++)
+    for (var i = 1; i <= 32; i++)
         lorenz.add(lorenz.generate());
     function go() {
         lorenz.step();

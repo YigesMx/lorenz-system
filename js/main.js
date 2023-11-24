@@ -8,13 +8,24 @@ window.addEventListener('load', function() {
     controls = new Controls(lorenz);
 
     window.addEventListener('keypress', function(e) {
-        if (e.which === '?'.charCodeAt(0)) {
-            var h = document.querySelector('#help');
+        if (e.which === '1'.charCodeAt(0)) {
+            var h = document.querySelector('#control-panel');
             h.style.display = h.style.display == 'none' ? 'block' : 'none';
         }
     });
     window.addEventListener('touchstart', function self(e) {
-        var h = document.querySelector('#help');
+        var h = document.querySelector('#control-panel');
+        h.style.display = 'none';
+    });
+
+    window.addEventListener('keypress', function(e) {
+        if (e.which === '2'.charCodeAt(0)) {
+            var h = document.querySelector('#presets-panel');
+            h.style.display = h.style.display == 'none' ? 'block' : 'none';
+        }
+    });
+    window.addEventListener('touchstart', function self(e) {
+        var h = document.querySelector('#presets-panel');
         h.style.display = 'none';
     });
 
@@ -30,22 +41,48 @@ window.addEventListener('load', function() {
     var option = document.querySelector('#option');
     option.addEventListener('input', function() {
         // console.log(option.value);
-        if(option.value === 'single-with-perturbation'){
+        var num_of_sample_to_add = document.querySelector('#sample-num-input').value;
+        var x = document.querySelector('#sample-coord-input-x').value;
+        var y = document.querySelector('#sample-coord-input-y').value;
+        var z = document.querySelector('#sample-coord-input-z').value;
+        //转为float数组
+        var coord = [parseFloat(x), parseFloat(y), parseFloat(z)];
+        console.log(num_of_sample_to_add);
+        if(option.value === 'reset-params'){ // Controls
+            var default_params = lorenz.get_default_params();
+            controls.set_sigma(default_params.sigma);
+            controls.set_beta(default_params.beta);
+            controls.set_rho(default_params.rho);
+
+            flush_params(lorenz);
+        }else if(option.value === 'clear'){// Sample
 
             controls.clear();
+
+        }else if(option.value === 'random-with-perturbation'){
+
             controls.add();
-            for (var i = 0; i < 31; i++)
+            for (var i = 1; i <= num_of_sample_to_add - 1; i++)
                 controls.clone();
 
         }else if(option.value === 'scatter'){
 
-            controls.clear()
-            for (var i = 0; i < 31; i++)
+            for (var i = 1; i <= num_of_sample_to_add; i++)
                 controls.add();
 
-        }else if(option.value === 'reset-view'){
+        }else if(option.value === 'coord-with-perturbation'){
 
-            lorenz.display = lorenz.get_default_display();
+            controls.add(coord);
+            for (var i = 1; i <= num_of_sample_to_add - 1; i++)
+                controls.clone();
+
+        }else if(option.value === 'reset-view'){ // Display
+
+            var default_display = lorenz.get_default_display();
+            lorenz.display.scale = default_display.scale;
+            lorenz.display.rotation = default_display.rotation;
+            lorenz.display.rotationd = default_display.rotationd;
+            lorenz.display.translation = default_display.translation;
 
         }else if(option.value === 'toggle-axes'){
 
@@ -58,18 +95,20 @@ window.addEventListener('load', function() {
             lorenz.display.rotationd[2] = 0.008;
             lorenz.display.damping = false;
 
-        }else if (option.value === 'chaos') {
+        }else if (option.value === 'chaos') { // Presets
             controls.clear();
             controls.add();
-            for (var i = 0; i < 31; i++)
+            for (var i = 1; i <= 32-1; i++)
                 controls.clone();
-            lorenz.params = lorenz.get_default_params();
-            lorenz.display = lorenz.get_default_display();
+            var default_params = lorenz.get_default_params();
+            controls.set_sigma(default_params.sigma);
+            controls.set_beta(default_params.beta);
+            controls.set_rho(default_params.rho);
 
             flush_params(lorenz);
         }else if (option.value === 'bendy') {
             controls.clear()
-            for (var i = 0; i < 31; i++)
+            for (var i = 1; i < 32; i++)
                 controls.add();
 
             controls.set_sigma(17.24);

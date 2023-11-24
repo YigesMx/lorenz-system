@@ -98,9 +98,9 @@ function Controls(lorenz) {
     window.addEventListener('keypress', function(e) {
         if (e.which == 'a'.charCodeAt(0))
             this.add();
-        else if (e.which == 'c'.charCodeAt(0))
+        else if (e.which == 'p'.charCodeAt(0))
             this.clone();
-        else if (e.which == 'C'.charCodeAt(0))
+        else if (e.which == 'c'.charCodeAt(0))
             this.clear();
         else if (e.which == ' '.charCodeAt(0))
             this.pause();
@@ -108,16 +108,16 @@ function Controls(lorenz) {
             this.lorenz.display.draw_heads = !this.lorenz.display.draw_heads;
         else if (e.which == 'd'.charCodeAt(0))
             this.lorenz.display.damping = !this.lorenz.display.damping;
-        else if (e.which == '['.charCodeAt(0) && lorenz.length > 4)
-            this.set_length({
-                input: Math.log(lorenz.length /= 2) * Math.LOG2E,
-                label: lorenz.length
-            });
-        else if (e.which == ']'.charCodeAt(0) && lorenz.length < 32768)
-            this.set_length({
-                input: Math.log(lorenz.length *= 2) * Math.LOG2E,
-                label: lorenz.length
-            });
+        // else if (e.which == '['.charCodeAt(0) && lorenz.length > 4)
+        //     this.set_length({
+        //         input: Math.log(lorenz.length /= 2) * Math.LOG2E,
+        //         label: lorenz.length
+        //     });
+        // else if (e.which == ']'.charCodeAt(0) && lorenz.length < 32768)
+        //     this.set_length({
+        //         input: Math.log(lorenz.length *= 2) * Math.LOG2E,
+        //         label: lorenz.length
+        //     });
    }.bind(this));
 
     window.addEventListener('touchmove', function(e) {
@@ -163,8 +163,14 @@ Controls.prototype.delta = function(scale) {
     };
 };
 
-Controls.prototype.add = function() {
-    this.lorenz.add(lorenz.generate());
+Controls.prototype.add = function(s) {
+    if(s !== undefined){
+        console.log(s);
+        this.lorenz.add(s);
+    }else{
+        this.lorenz.add(lorenz.generate());
+    }
+
     for (var n = 0; n < this.listeners.length; n++)
         this.listeners[n]();
 };

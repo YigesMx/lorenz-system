@@ -14,10 +14,8 @@ canvas {
     height: 100%;
 }
 
-#help {
+#control-panel, #presets-panel {
     position: absolute;
-    top: 0;
-    left: 0;
     z-index: 100;
     background: #444;
     color: #fff;
@@ -28,17 +26,27 @@ canvas {
     box-shadow: inset #111 0 0 5px;
 }
 
-#help ul {
+#control-panel {
+    top: 0;
+    left: 0;
+}
+
+#presets-panel {
+    top: 0;
+    right: 0;
+}
+
+#control-panel ul, #presets-panel ul {
     margin: 0;
     padding: 0;
 }
 
-#help li {
+#control-panel li, #presets-panel li {
     list-style-type: none;
     font-size: 16px;
 }
 
-#help kbd {
+#control-panel kbd, #presets-panel kbd {
     font-family: monospace;
     font-size: 20px;
     width: 22px;
@@ -46,7 +54,7 @@ canvas {
     font-weight: bold;
 }
 
-#help h1 {
+#control-panel h4, #presets-panel h4 {
     color: white;
     font-size: 14px;
     font-weight: bold;
@@ -54,12 +62,12 @@ canvas {
     margin: 10px 5px 5px 0;
 }
 
-#help h1 a {
+#control-panel h4 a, #presets-panel h4 a {
     color: #aaf;
     text-decoration: none;
 }
 
-#help select {
+#control-panel select, #presets-panel select {
     width: 100%;
     margin-top: 10px;
 }
