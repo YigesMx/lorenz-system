@@ -164,7 +164,7 @@ Controls.prototype.delta = function(scale) {
 };
 
 Controls.prototype.add = function() {
-    this.lorenz.add(Lorenz.generate());
+    this.lorenz.add(lorenz.generate());
     for (var n = 0; n < this.listeners.length; n++)
         this.listeners[n]();
 };

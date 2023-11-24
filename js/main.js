@@ -4,10 +4,7 @@ var controls = null;
 window.addEventListener('load', function() {
     var canvas = document.querySelector('#lorenz');
     lorenz = Lorenz.run(canvas);
-    changeParam('length-input', lorenz.params.length);
-    changeParam('sigma-input', lorenz.params.sigma);
-    changeParam('beta-input', lorenz.params.beta);
-    changeParam('rho-input', lorenz.params.rho);
+    flush_params(lorenz);
     controls = new Controls(lorenz);
 
     window.addEventListener('keypress', function(e) {
@@ -30,48 +27,97 @@ window.addEventListener('load', function() {
     window.setInterval(update_stats, 1000);
     controls.listeners.push(update_stats);
 
-    var preset = document.querySelector('#preset');
-    preset.addEventListener('input', function() {
-    // var preset = document.getElementById('preset');
-    // preset.addEventListener('input', function() {
-        console.log(preset.value);
-        if (preset.value === 'chaos') {
+    var option = document.querySelector('#option');
+    option.addEventListener('input', function() {
+        // console.log(option.value);
+        if(option.value === 'single-with-perturbation'){
+
             controls.clear();
             controls.add();
             for (var i = 0; i < 31; i++)
                 controls.clone();
-        } else if (preset.value === 'gentle') {
-            while (lorenz.solutions.length < 32)
+
+        }else if(option.value === 'scatter'){
+
+            controls.clear()
+            for (var i = 0; i < 31; i++)
                 controls.add();
+
+        }else if(option.value === 'reset-view'){
+
+            lorenz.display = lorenz.get_default_display();
+
+        }else if(option.value === 'toggle-axes'){
+
+            lorenz.display.draw_axes = !lorenz.display.draw_axes;
+
+        }else if (option.value === 'gentle-rotation') {
+
             lorenz.display.rotationd[0] = 0;
             lorenz.display.rotationd[1] = 0;
-            lorenz.display.rotationd[2] = 0.007;
+            lorenz.display.rotationd[2] = 0.008;
             lorenz.display.damping = false;
-        } else if (preset.value === 'bendy') {
-            while (lorenz.solutions.length < 32)
+
+        }else if (option.value === 'chaos') {
+            controls.clear();
+            controls.add();
+            for (var i = 0; i < 31; i++)
+                controls.clone();
+            lorenz.params = lorenz.get_default_params();
+            lorenz.display = lorenz.get_default_display();
+
+            flush_params(lorenz);
+        }else if (option.value === 'bendy') {
+            controls.clear()
+            for (var i = 0; i < 31; i++)
                 controls.add();
+
             controls.set_sigma(17.24);
             controls.set_beta(1.1);
             controls.set_rho(217);
+
             lorenz.display.scale = 1 / 65;
+
+            flush_params(lorenz);
         }
     });
 });
 
-function changePreset(option) {
-    var preset = document.getElementById('preset');
-    preset.value = option;
 
-    // 创建并触发一个新的 'input' 事件
-    var event = new Event('input', { bubbles: true });
-    preset.dispatchEvent(event);
-}
+var gap = 1;
 
-function changeParam(id, value) {
-    var param = document.getElementById(id);
-    param.value = value;
+var setValueTriggerInput = (function() {
+    var lastCall = 0;
 
-    // 创建并触发一个新的 'input' 事件
-    var event = new Event('input', { bubbles: true });
-    param.dispatchEvent(event);
+    return function(param_id, value) {
+        var now = Date.now();
+        if (now - lastCall >= gap) {
+            lastCall = now;
+
+            var param_ele = document.getElementById(param_id);
+            param_ele.value = value;
+
+            // 创建并触发一个新的 'input' 事件
+            var event = new Event('input', { bubbles: true });
+            param_ele.dispatchEvent(event);
+        }
+    }
+})();
+
+function flush_params(lorenz) {
+    setTimeout(function() {
+        setValueTriggerInput('length-input', Math.round(Math.log2(lorenz.length)));
+    }, 0);
+
+    setTimeout(function() {
+        setValueTriggerInput('sigma-input', lorenz.params.sigma);
+    }, 40);
+
+    setTimeout(function() {
+        setValueTriggerInput('beta-input', lorenz.params.beta);
+    }, 80);
+
+    setTimeout(function() {
+        setValueTriggerInput('rho-input', lorenz.params.rho);
+    }, 120);
 }

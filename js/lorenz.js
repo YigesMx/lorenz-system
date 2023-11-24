@@ -22,13 +22,28 @@ function Lorenz(canvas) {
     };
     this.display = {
         scale: 1 / 25, 
-        rotation: [1.4, 3.08, -2.5],
+        rotation: [Math.PI/2, Math.PI, -Math.PI*(3/4)],
         rotationd: [0, 0, 0],
-        translation: [0, 0.075, 1.81],
+        translation: [0, 0, 2.5],
         draw_heads: false,
+        draw_axes: true,
         damping: true,
         _length: 512 // change through length getter/setter
     };
+
+    this.get_default_params = (function() {
+        var default_params = JSON.parse(JSON.stringify(this.params));
+        return function() {
+            return JSON.parse(JSON.stringify(default_params));
+        }
+    }).bind(this)();
+
+    this.get_default_display = (function() {
+        var default_display = JSON.parse(JSON.stringify(this.display));
+        return function() {
+            return JSON.parse(JSON.stringify(default_display));
+        }
+    }).bind(this)();
 
     this.solutions = [];
     this.tail = new Float32Array(0);
@@ -177,17 +192,6 @@ Lorenz.create_index_array = function(gl, length) {
 /**
  * @returns {number[3]}
  */
-Lorenz.generate = function() {
-    return [
-        (Math.random() - 0.5) * 50,
-        (Math.random() - 0.5) * 50,
-        (Math.random() - 0.5) * 50,
-    ];
-};
-
-/**
- * @returns {number[3]}
- */
 Lorenz.color = function(i) {
     var colors = [
         184, 233, 148,
@@ -218,7 +222,7 @@ Lorenz.color = function(i) {
  * @param {!number}    ρ
  * @returns {undefined}
  */
-Lorenz.lorenz = function(s, dt, σ, β, ρ) {
+Lorenz.lorenz = function(s, dt, σ, β, ρ) { // 四阶龙格-库塔方法
     function dx(x, y, z) { return σ * (y - x); }
     function dy(x, y, z) { return x * (ρ - z) - y; }
     function dz(x, y, z) { return x * y - β * z; }
@@ -326,7 +330,7 @@ Lorenz.prototype.step = function() {
     this.display.rotation[1] += this.display.rotationd[1];
     this.display.rotation[2] += this.display.rotationd[2];
     if (this.display.damping) {
-        var damping = 0.96;
+        var damping = 0.98;
         this.display.rotationd[0] *= damping;
         this.display.rotationd[1] *= damping;
         this.display.rotationd[2] *= damping;
@@ -422,7 +426,7 @@ Lorenz.prototype.draw = function() {
         gl.drawArrays(gl.POINTS, 0, count);
     }
 
-    if (true) { //draw axes
+    if (this.display.draw_axes) { //draw axes
         
         var unit = this.params.rho;
         // var unit = 1; 
@@ -498,6 +502,17 @@ Lorenz.prototype._grow_buffers = function() {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.head_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, count * 3 * 4, gl.DYNAMIC_DRAW);
     }
+};
+
+/**
+ * @returns {number[3]}
+ */
+Lorenz.prototype.generate = function() {
+    return [
+        (Math.random() - 0.5) * this.params.rho * 3,
+        (Math.random() - 0.5) * this.params.rho * 3,
+        (Math.random() - 0.5) * this.params.rho * 3 + this.params.rho,
+    ];
 };
 
 /**
@@ -579,7 +594,7 @@ Object.defineProperty(Lorenz.prototype, 'length', {
 Lorenz.run = function(canvas) {
     var lorenz = new Lorenz(canvas);
     for (var i = 0; i < 13; i++)
-        lorenz.add(Lorenz.generate());
+        lorenz.add(lorenz.generate());
     function go() {
         lorenz.step();
         lorenz.draw();

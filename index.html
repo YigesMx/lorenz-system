@@ -11,6 +11,9 @@
   <body>
     <div id="help">
       <ul>
+        <li><kbd>?</kbd>
+          <label>toggle this menu</label>
+        </li>
         <li><kbd></kbd>
           <label>left-click + drag: rotate X/Y</label>
         </li>
@@ -45,42 +48,59 @@
           <label>increase tail length</label>
         </li>
         <li><kbd>d</kbd>
-          <label>toggle rotational damping</label>
-        </li>
-        <li><kbd>?</kbd>
-          <label>toggle this menu</label>
+          <label>Toggle Rotation Damp</label>
         </li>
         <li>
-          <input id="length" type="range" min="2" max="12" step="1" oninput="changeParam('length-input', this.value)"/>
-          <input class="input-box" id="length-input" type="number" min="2" max="12" step="1" oninput="changeParam('length', this.value)"/>
+          <input id="length" type="range" min="2" max="12" step="1" oninput="setValueTriggerInput('length-input', this.value)"/>
+          <input class="input-box" id="length-input" type="number" min="2" max="12" step="1" oninput="setValueTriggerInput('length', this.value)"/>
           <label>tail = <span class="label" id="length-label"></span></label>
         </li>
         <li>
-          <input id="sigma" type="range" min="-1" max="20" step="0.001" oninput="changeParam('sigma-input', this.value)"/>
-          <input class="input-box" id="sigma-input" type="number" min="-1" max="20" step="0.001" oninput="changeParam('sigma', this.value)"/>
+          <input id="sigma" type="range" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma-input', this.value)"/>
+          <input class="input-box" id="sigma-input" type="number" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma', this.value)"/>
           <label>&sigma; = <span class="label" id="sigma-label"></span></label>
         </li>
         <li>
-          <input id="beta" type="range" min="0" max="20" step="0.001" oninput="changeParam('beta-input', this.value)"/>
-          <input class="input-box" id="beta-input" type="number" min="0" max="20" step="0.001" oninput="changeParam('beta', this.value)"/>
+          <input id="beta" type="range" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta-input', this.value)"/>
+          <input class="input-box" id="beta-input" type="number" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta', this.value)"/>
           <label>&beta; = <span class="label" id="beta-label"></span></label>
         </li>
         <li>
-          <input id="rho" type="range" min="0" max="350" step="0.05" oninput="changeParam('rho-input', this.value)"/>
-          <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.05" oninput="changeParam('rho', this.value)"/>
+          <input id="rho" type="range" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho-input', this.value)"/>
+          <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho', this.value)"/>
           <label>&rho; = <span class="label" id="rho-label"></span></label>
         </li>
         <li>
+          <input type="hidden" id="option">
           <li>
-            <input type="hidden" id="preset">
-            <button id="chaos" onclick="changePreset(this.id);">Chaos Demo</button>
-            <button id="gentle" onclick="changePreset(this.id);">Gentle Rotation</button>
-            <button id="bendy" onclick="changePreset(this.id);">Bendy</button>
+            <span>Sampling</span>
+            <div class="button-block">
+              <button id="single-with-perturbation" onclick="setValueTriggerInput('option', this.id);">Single with Perturbation</button>
+              <button id="scatter" onclick="setValueTriggerInput('option', this.id);">Scatter</button>
+            </div>
+          </li>
+          <li>
+            <span>Actions</span>
+            <div class="button-block">
+              <button id="reset-view" onclick="setValueTriggerInput('option', this.id);">Reset View</button>
+              <button id="toggle-axes" onclick="setValueTriggerInput('option', this.id);">Toggle Axes</button>
+              <button id="gentle-rotation" onclick="setValueTriggerInput('option', this.id);">Rotate</button>
+            </div>
+          </li>
+          <li>
+            <span>Presets</span>
+            <div class="button-block">
+              <button id="chaos" onclick="setValueTriggerInput('option', this.id);">Chaos</button>
+              <button id="bendy" onclick="setValueTriggerInput('option', this.id);">Bendy</button>
+            </div>
           </li>
         </li>
       </ul>
       <h1>
-        <a href="https://github.com/skeeto/lorenz-webgl">Source Repository</a>
+        <a href="https://github.com/skeeto/lorenz-webgl">Original Repository</a>
+      </h1>
+      <h1>
+        <a href="#">Source Repository</a>
       </h1>
       <div id="stats"></div>
     </div>
