@@ -27,6 +27,7 @@ function Lorenz(canvas) {
         translation: [0, 0, 2.5],
         draw_heads: false,
         draw_axes: true,
+        proj_mode: 0,
         damping: true,
         _length: 512 // change through length getter/setter
     };
@@ -86,7 +87,7 @@ function Lorenz(canvas) {
 
     this.axes_colors = [ // 坐标轴颜色，作为uniform变量传入
         [235/255, 47/255, 6/255],
-        [250/255, 211/255, 144/255],
+        [74/255, 105/255, 189/255],
         [250/255, 152/255, 58/255]
     ]
     // 创建axes绘制相关的buffer
@@ -375,6 +376,7 @@ Lorenz.prototype.draw = function() {
     var rotation = this.display.rotation;
     var translation = this.display.translation;
     var rho = this.params.rho;
+    var proj_mode = this.display.proj_mode;
     var start = (this.tail_index - 1 + length) % length;
 
     gl.useProgram(this.programs.tail.program);
@@ -388,6 +390,7 @@ Lorenz.prototype.draw = function() {
     gl.uniform3fv(uniform.rotation, rotation);
     gl.uniform3fv(uniform.translation, translation);
     gl.uniform1f(uniform.rho, rho);
+    gl.uniform1i(uniform.proj_mode, proj_mode);
     gl.uniform1f(uniform.max_length, length);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.tail_buffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tail_element_buffer);
@@ -423,6 +426,7 @@ Lorenz.prototype.draw = function() {
         gl.uniform3fv(uniform.rotation, rotation);
         gl.uniform3fv(uniform.translation, translation);
         gl.uniform1f(uniform.rho, rho);
+        gl.uniform1i(uniform.proj_mode, proj_mode);
         gl.drawArrays(gl.POINTS, 0, count);
     }
 
@@ -448,6 +452,7 @@ Lorenz.prototype.draw = function() {
             gl.uniform3fv(uniform.rotation, rotation);
             gl.uniform3fv(uniform.translation, translation);
             gl.uniform1f(uniform.rho, rho);
+            gl.uniform1i(uniform.proj_mode, proj_mode);
         
         
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.axes[i]), gl.STATIC_DRAW);

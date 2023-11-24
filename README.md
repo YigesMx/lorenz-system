@@ -1,10 +1,18 @@
-# Lorenz System WebGL
+# Lorenz System Visualizer
 
-This is an interactive animation of a chaotic [Lorenz
-system](https://en.wikipedia.org/wiki/Lorenz_system). Click and drag
-to look around the system in 3D. Middle-click and drag to reposition.
+This is an modified interactive visualizer of [Lorenz system](https://en.wikipedia.org/wiki/Lorenz_system). 
 
-Online demo: http://skeeto.github.io/lorenz-webgl/
+This project is based on [skeeto/lorenz-webgl](https://github.com/skeeto/lorenz-webgl), thanks to the author for the great work.
 
-The demo begins with 13 solutions with very close starting values. You
-will see them gradually separate over the first minute or so.
+I fixed some problems and add some features to the original project:
+
+- Improved the control panel and made it eazier to:
+  - Modify the parameters of the lorenz system.
+  - Modify the display-related parameters.
+  - Manage the solutions/samples.
+- Add some functions:
+  - Toggle Axes.
+  - Project on X-Y, Y-Z, X-Z plane.
+  - More presets under different parameters to reveal the evolution of lorenz system. 
+- Fixed some problems:
+  - Wrong binding of the param 'rho'.

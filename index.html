@@ -13,7 +13,7 @@
 
     <div id="control-panel">
       <ul>
-        <li><kbd>1</kbd>
+        <li><kbd>q</kbd>
           <label>toggle this menu</label>
         </li>
 
@@ -47,6 +47,21 @@
             <label>toggle rotation damp</label>
           </li>
           <br/>
+          <div class="button-block">
+            <span>projection</span>
+            <button id="proj-x-y" onclick="setValueTriggerInput('option', this.id);">X-Y</button>
+            <button id="proj-x-z" onclick="setValueTriggerInput('option', this.id);">X-Z</button>
+            <button id="proj-y-z" onclick="setValueTriggerInput('option', this.id);">Y-Z</button>
+            <button id="proj-non" onclick="setValueTriggerInput('option', this.id);">3D</button>
+          </div>
+          <div class="button-block">
+            <span>view from</span>
+            <button id="view-from-z" onclick="setValueTriggerInput('option', this.id);">Z</button>
+            &nbsp;
+            <button id="view-from-y" onclick="setValueTriggerInput('option', this.id);">-Y</button>
+            &nbsp;
+            <button id="view-from-x" onclick="setValueTriggerInput('option', this.id);">X</button>
+          </div>
           <div class="button-block">
             <button id="reset-view" onclick="setValueTriggerInput('option', this.id);">Reset View</button>
             <button id="toggle-axes" onclick="setValueTriggerInput('option', this.id);">Toggle Axes</button>
@@ -86,15 +101,15 @@
             <label>add solution with random initial value</label>
           </li>
           <li><kbd>p</kbd>
-            <label>clone a solution with perturbation</label>
+            <label>clone a recent added solution with perturbation</label>
           </li>
           <li><kbd>c</kbd>
             <label>clear all solutions</label>
           </li>
-          <br/>
+          <!-- <br/>
           <div class="button-block">
             <button id="clear" onclick="setValueTriggerInput('option', this.id);">Clear</button>
-          </div>
+          </div> -->
           <br/>
           <div>
             <span style="font-size: smaller;">Number to Add</span>
@@ -108,9 +123,9 @@
           <br/>
           <div>
             <span style="font-size: smaller;">(x, y, z)</span>
-            <input class="input-box" id="sample-coord-input-x" type="number" min="-1000" max="1000" step="0.000001" value="0"/>
-            <input class="input-box" id="sample-coord-input-y" type="number" min="-1000" max="1000" step="0.000001" value="0"/>
-            <input class="input-box" id="sample-coord-input-z" type="number" min="-1000" max="1000" step="0.000001" value="0"/>
+            <input class="input-box" id="sample-coord-input-x" type="number" min="-1000" max="1000" step="0.000001" value="30"/>
+            <input class="input-box" id="sample-coord-input-y" type="number" min="-1000" max="1000" step="0.000001" value="30"/>
+            <input class="input-box" id="sample-coord-input-z" type="number" min="-1000" max="1000" step="0.000001" value="20"/>
           </div>
           <div class="button-block">
             <button id="coord-with-perturbation" onclick="setValueTriggerInput('option', this.id);">At (x, y, z) with Perturbation</button>
@@ -131,7 +146,7 @@
 
     <div id="presets-panel">
       <ul>
-        <li><kbd>2</kbd>
+        <li><kbd>e</kbd>
           <label>toggle this menu</label>
         </li>
         <li>

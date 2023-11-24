@@ -8,7 +8,7 @@ window.addEventListener('load', function() {
     controls = new Controls(lorenz);
 
     window.addEventListener('keypress', function(e) {
-        if (e.which === '1'.charCodeAt(0)) {
+        if (e.which === 'q'.charCodeAt(0)) {
             var h = document.querySelector('#control-panel');
             h.style.display = h.style.display == 'none' ? 'block' : 'none';
         }
@@ -19,7 +19,7 @@ window.addEventListener('load', function() {
     });
 
     window.addEventListener('keypress', function(e) {
-        if (e.which === '2'.charCodeAt(0)) {
+        if (e.which === 'e'.charCodeAt(0)) {
             var h = document.querySelector('#presets-panel');
             h.style.display = h.style.display == 'none' ? 'block' : 'none';
         }
@@ -76,7 +76,26 @@ window.addEventListener('load', function() {
             for (var i = 1; i <= num_of_sample_to_add - 1; i++)
                 controls.clone();
 
-        }else if(option.value === 'reset-view'){ // Display
+        }else if(option.value === 'proj-non'){ // Display
+
+            lorenz.display.proj_mode = 0;
+
+        }else if(option.value === 'proj-x-y'){
+
+            lorenz.display.proj_mode = 1;
+            lorenz.display.rotation = [0, Math.PI, -Math.PI*(1/2)];
+
+        }else if(option.value === 'proj-x-z'){
+
+            lorenz.display.proj_mode = 2;
+            lorenz.display.rotation = [Math.PI*(1/2), Math.PI, -Math.PI*(1)];
+
+        }else if(option.value === 'proj-y-z'){
+
+            lorenz.display.proj_mode = 3;
+            lorenz.display.rotation = [Math.PI*(1/2), Math.PI, -Math.PI*(1/2)];
+
+        }else if(option.value === 'reset-view'){
 
             var default_display = lorenz.get_default_display();
             lorenz.display.scale = default_display.scale;
@@ -94,6 +113,18 @@ window.addEventListener('load', function() {
             lorenz.display.rotationd[1] = 0;
             lorenz.display.rotationd[2] = 0.008;
             lorenz.display.damping = false;
+
+        }else if(option.value === 'view-from-x'){
+
+            lorenz.display.rotation = [Math.PI*(1/2), Math.PI, -Math.PI*(1/2)];
+            
+        }else if(option.value === 'view-from-y'){
+            
+            lorenz.display.rotation = [Math.PI*(1/2), Math.PI, -Math.PI*(1)];
+            
+        }else if(option.value === 'view-from-z'){
+            
+            lorenz.display.rotation = [0, Math.PI, -Math.PI*(1/2)];
 
         }else if (option.value === 'chaos') { // Presets
             controls.clear();
@@ -123,9 +154,9 @@ window.addEventListener('load', function() {
 });
 
 
-var gap = 1;
 
 var setValueTriggerInput = (function() {
+    var gap = 1;
     var lastCall = 0;
 
     return function(param_id, value) {

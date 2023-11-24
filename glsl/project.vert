@@ -70,3 +70,16 @@ mat4 rotate_z(float t)
         vec4(0.0, 0.0, 0.0, 1.0)
     );
 }
+
+vec3 project_to_plane(vec3 v, int mode)
+{
+    if (mode == 0) {
+        return v;
+    } else if (mode == 1) {
+        return vec3(v.x, v.y, 0.0);
+    } else if (mode == 2) {
+        return vec3(v.x, 0.0, v.z);
+    } else if (mode == 3) {
+        return vec3(0.0, v.y, v.z);
+    }
+}
