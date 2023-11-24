@@ -11,8 +11,16 @@ I fixed some problems and add some features to the original project:
   - Modify the display-related parameters.
   - Manage the solutions/samples.
 - Add some functions:
-  - Toggle Axes.
-  - Project on X-Y, Y-Z, X-Z plane.
-  - More presets under different parameters to reveal the evolution of lorenz system. 
+  - Display
+    - Toggle Perspective/Orthographic projection.
+    - Project on X-Y, Y-Z, X-Z plane.
+    - Quick change view point: view from X, -Y, Z axis.
+    - Reset View.
+    - Toggle Axes.
+    - Toggle Ticker-Timer: If toggled on, when the solutions project on a plane, the time axis will be displayed on the normal direction.
+  - Solutions
+    - Add solutions at a specific point.
+  - Presets 
+    - More presets under different parameters to reveal the evolution of lorenz system. 
 - Fixed some problems:
   - Wrong binding of the param 'rho'.

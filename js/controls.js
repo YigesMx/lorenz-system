@@ -105,9 +105,9 @@ function Controls(lorenz) {
         else if (e.which == ' '.charCodeAt(0))
             this.pause();
         else if (e.which == 'h'.charCodeAt(0))
-            this.lorenz.display.draw_heads = !this.lorenz.display.draw_heads;
+            this.toggle_heads();
         else if (e.which == 'd'.charCodeAt(0))
-            this.lorenz.display.damping = !this.lorenz.display.damping;
+            this.toggle_rotation_damping();
         // else if (e.which == '['.charCodeAt(0) && lorenz.length > 4)
         //     this.set_length({
         //         input: Math.log(lorenz.length /= 2) * Math.LOG2E,
@@ -215,3 +215,88 @@ Controls.prototype.bind = function(input_selector, label_selector, f) {
         return self;
     };
 };
+
+//Display
+
+Controls.prototype.toggle_projection = function() {
+    this.lorenz.display.projection = !this.lorenz.display.projection;
+};
+
+Controls.prototype.view_from_x = function() {
+    this.lorenz.display.rotation = [Math.PI*(1/2), Math.PI, -Math.PI*(1/2)];
+};
+
+Controls.prototype.view_from_y = function() {
+    this.lorenz.display.rotation = [Math.PI*(1/2), Math.PI, -Math.PI*(1)];
+};
+
+Controls.prototype.view_from_z = (function() {
+    var direction = 0;
+    return function() {
+        if(direction === 0){
+            this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1/2)];
+            direction = 1;
+        }else{
+            this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1)];
+            direction = 0;
+        }
+    }
+})();
+
+Controls.prototype.proj_none = function() {
+    this.lorenz.display.proj_mode = 0;
+};
+
+Controls.prototype.proj_on_xy = function() {
+    this.lorenz.display.proj_mode = 1;
+};
+
+Controls.prototype.proj_on_xz = function() {
+    this.lorenz.display.proj_mode = 2;
+};
+
+Controls.prototype.proj_on_yz = function() {
+    this.lorenz.display.proj_mode = 3;
+};
+
+Controls.prototype.reset_view = function() {
+    var default_display = this.lorenz.get_default_display();
+    this.lorenz.display.rotation = default_display.rotation;
+    this.lorenz.display.translation = default_display.translation;
+}
+
+Controls.prototype.reset_params = function() {
+    var default_params = this.lorenz.get_default_params();
+    this.set_sigma(default_params.sigma);
+    this.set_beta(default_params.beta);
+    this.set_rho(default_params.rho);
+}
+
+Controls.prototype.toggle_axis = function() {
+    this.lorenz.display.draw_axis = !this.lorenz.display.draw_axis;
+};
+
+Controls.prototype.rotate = function(w) {
+    this.lorenz.display.rotationd[0] = 0;
+    this.lorenz.display.rotationd[1] = 0;
+    this.lorenz.display.rotationd[2] = w;
+    this.lorenz.display.damping = false;
+}
+
+Controls.prototype.toggle_ticker_timer = function() {
+    if(this.lorenz.display.roll == 0){
+        this.lorenz.display.timer = 0;
+        this.lorenz.display.roll = 1;
+    }else{
+        this.lorenz.display.timer = 0;
+        this.lorenz.display.roll = 0;
+    }
+};
+
+Controls.prototype.toggle_rotation_damping = function() {
+    this.lorenz.display.damping = !this.lorenz.display.damping;
+}
+
+Controls.prototype.toggle_heads = function() {
+    this.lorenz.display.draw_heads = !this.lorenz.display.draw_heads;
+}

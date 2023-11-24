@@ -12,7 +12,10 @@ uniform int proj_mode;
 varying vec3 vcolor;
 
 void main() {
-    vec3 point = project_to_plane(point, proj_mode);
+    vec3 point = project_to_plane(point, proj_mode, 0.0, 0.0);
+
+    gl_PointSize = 160.0 * scale;
+    float scale = scale * (projection == 0 ? 1.0 : ortho_scale);
 
     vcolor = color;
     vec4 position = vec4(point.xy, point.z - rho, 1);
@@ -23,5 +26,4 @@ void main() {
         * rotate_z(rotation.z)
         * view_scale(scale, scale, scale)
         * position;
-    gl_PointSize = 160.0 * scale;
 }

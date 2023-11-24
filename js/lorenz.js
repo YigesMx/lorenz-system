@@ -21,16 +21,24 @@ function Lorenz(canvas) {
         paused: false
     };
     this.display = {
+        projection: 0,
         scale: 1 / 25, 
         rotation: [Math.PI/2, Math.PI, -Math.PI*(3/4)],
         rotationd: [0, 0, 0],
         translation: [0, 0, 2.5],
         draw_heads: false,
-        draw_axes: true,
+        draw_axis: true,
         proj_mode: 0,
-        damping: true,
+        timer: 0,
+        roll: 0,
+        damping: false,
         _length: 512 // change through length getter/setter
     };
+    this.axis_colors = [ // 坐标轴颜色，作为uniform变量传入
+        [235/255, 47/255, 6/255],
+        [74/255, 105/255, 189/255],
+        [250/255, 152/255, 58/255]
+    ]
 
     this.get_default_params = (function() {
         var default_params = JSON.parse(JSON.stringify(this.params));
@@ -58,21 +66,23 @@ function Lorenz(canvas) {
     this.head = new Float32Array(0);
     this.head_buffer = gl.createBuffer();
     this.tail_length = new Float32Array(0);
+    // 创建axis绘制相关的buffer
+    this.axis_buffer = gl.createBuffer();
 
     this.programs = {};
     var shaders = [
-        './glsl/project.vert',
-        './glsl/tail.vert',
-        './glsl/tail.frag',
-        './glsl/head.vert',
-        './glsl/head.frag',
-        './glsl/axes.vert',
-        './glsl/axes.frag'
+        './shaders/project.vert',
+        './shaders/tail.vert',
+        './shaders/tail.frag',
+        './shaders/head.vert',
+        './shaders/head.frag',
+        './shaders/axis.vert',
+        './shaders/axis.frag'
     ];
-    Lorenz.fetch(shaders, function(project, tail_v, tail_f, head_v, head_f, axes_v, axes_f) {
+    Lorenz.fetch(shaders, function(project, tail_v, tail_f, head_v, head_f, axis_v, axis_f) {
         this.programs.tail = Lorenz.compile(gl, project + tail_v, tail_f);
         this.programs.head = Lorenz.compile(gl, project + head_v, head_f);
-        this.programs.axes = Lorenz.compile(gl, project + axes_v, axes_f);
+        this.programs.axis = Lorenz.compile(gl, project + axis_v, axis_f);
         /* Both use two attrib arrays, so just turn them on now. */
         gl.enableVertexAttribArray(0);
         gl.enableVertexAttribArray(1);
@@ -84,14 +94,6 @@ function Lorenz(canvas) {
     this.accum = 0;
     this.second = Math.floor(Date.now() / 1000);
     this.ready = false;
-
-    this.axes_colors = [ // 坐标轴颜色，作为uniform变量传入
-        [235/255, 47/255, 6/255],
-        [74/255, 105/255, 189/255],
-        [250/255, 152/255, 58/255]
-    ]
-    // 创建axes绘制相关的buffer
-    this.axes_buffer = gl.createBuffer();
 }
 
 /**
@@ -326,6 +328,10 @@ Lorenz.prototype.step = function() {
             this._update(start_index, length - 1);
             this._update(0, stop_index);
         }
+
+        if(this.display.roll == 1){
+            this.display.timer += 0.01;
+        }
     }
     this.display.rotation[0] += this.display.rotationd[0];
     this.display.rotation[1] += this.display.rotationd[1];
@@ -367,18 +373,19 @@ Lorenz.prototype.draw = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     var count = this.solutions.length;
-    if (count == 0)
-        return this;
 
     var aspect = gl.canvas.width / gl.canvas.height;
     var length = this.display._length;
+    var projection = this.display.projection;
     var scale = this.display.scale;
     var rotation = this.display.rotation;
     var translation = this.display.translation;
     var rho = this.params.rho;
     var proj_mode = this.display.proj_mode;
+    var timer = this.display.timer;
     var start = (this.tail_index - 1 + length) % length;
 
+    //draw tails
     gl.useProgram(this.programs.tail.program);
     var attrib = this.programs.tail.attrib;
     var uniform = this.programs.tail.uniform;
@@ -386,79 +393,90 @@ Lorenz.prototype.draw = function() {
     gl.vertexAttribPointer(attrib.index, 1, gl.FLOAT, false, 0,
                            (length - start - 1) * 4);
     gl.uniform1f(uniform.aspect, aspect);
+    gl.uniform1i(uniform.projection, projection);
     gl.uniform1f(uniform.scale, scale);
     gl.uniform3fv(uniform.rotation, rotation);
     gl.uniform3fv(uniform.translation, translation);
     gl.uniform1f(uniform.rho, rho);
     gl.uniform1i(uniform.proj_mode, proj_mode);
+    gl.uniform1f(uniform.timer, timer);
     gl.uniform1f(uniform.max_length, length);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.tail_buffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.tail_element_buffer);
-    for (var i = 0; i < count; i++) {
-        var r = this.tail_colors[i * 3 + 0];
-        var g = this.tail_colors[i * 3 + 1];
-        var b = this.tail_colors[i * 3 + 2];
-        var offset = i * length * 4 * 3;
-        gl.uniform3f(uniform.color, r, g, b);
-        gl.uniform1f(uniform.tail_length, this.tail_length[i]);
-        gl.vertexAttribPointer(attrib.point, 3, gl.FLOAT, false, 0, offset);
-        gl.drawElements(gl.LINE_STRIP, length, gl.UNSIGNED_SHORT,
-                        (length - start - 1) * 2);
-    }
 
-    if (this.display.draw_heads) {
-        gl.useProgram(this.programs.head.program);
-        attrib = this.programs.head.attrib;
-        uniform = this.programs.head.uniform;
-        for (var s = 0; s < count; s++) {
-            var base = s * length * 3 + start * 3;
-            this.head[s * 3 + 0] = this.tail[base + 0];
-            this.head[s * 3 + 1] = this.tail[base + 1];
-            this.head[s * 3 + 2] = this.tail[base + 2];
+    if (count > 0)
+        for (var i = 0; i < count; i++) {
+            var r = this.tail_colors[i * 3 + 0];
+            var g = this.tail_colors[i * 3 + 1];
+            var b = this.tail_colors[i * 3 + 2];
+            var offset = i * length * 4 * 3;
+            gl.uniform3f(uniform.color, r, g, b);
+            gl.uniform1f(uniform.tail_length, this.tail_length[i]);
+            gl.vertexAttribPointer(attrib.point, 3, gl.FLOAT, false, 0, offset);
+            gl.drawElements(gl.LINE_STRIP, length, gl.UNSIGNED_SHORT,
+                            (length - start - 1) * 2);
         }
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.head_buffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.head);
-        gl.vertexAttribPointer(attrib.point, 3, gl.FLOAT, false, 0, 0);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.tail_colors_buffer);
-        gl.vertexAttribPointer(attrib.color, 3, gl.FLOAT, false, 0, 0);
-        gl.uniform1f(uniform.aspect, aspect);
-        gl.uniform1f(uniform.scale, scale);
-        gl.uniform3fv(uniform.rotation, rotation);
-        gl.uniform3fv(uniform.translation, translation);
-        gl.uniform1f(uniform.rho, rho);
-        gl.uniform1i(uniform.proj_mode, proj_mode);
-        gl.drawArrays(gl.POINTS, 0, count);
-    }
 
-    if (this.display.draw_axes) { //draw axes
-        
-        var unit = this.params.rho;
-        // var unit = 1; 
-        this.axes = [
-            [0,0,0, unit,0,0],
-            [0,0,0, 0,unit,0],
-            [0,0,0, 0,0,unit]
-        ]
-
-        for (var i = 0; i < this.axes.length; i++) {
-            gl.useProgram(this.programs.axes.program);
-            var attrib = this.programs.axes.attrib;
-            var uniform = this.programs.axes.uniform;
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.axes_buffer);
-            
+    //draw heads
+    if (count > 0)
+        if (this.display.draw_heads) {
+            gl.useProgram(this.programs.head.program);
+            attrib = this.programs.head.attrib;
+            uniform = this.programs.head.uniform;
+            for (var s = 0; s < count; s++) {
+                var base = s * length * 3 + start * 3;
+                this.head[s * 3 + 0] = this.tail[base + 0];
+                this.head[s * 3 + 1] = this.tail[base + 1];
+                this.head[s * 3 + 2] = this.tail[base + 2];
+            }
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.head_buffer);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.head);
+            gl.vertexAttribPointer(attrib.point, 3, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.tail_colors_buffer);
+            gl.vertexAttribPointer(attrib.color, 3, gl.FLOAT, false, 0, 0);
             gl.uniform1f(uniform.aspect, aspect);
+            gl.uniform1i(uniform.projection, projection);
             gl.uniform1f(uniform.scale, scale);
             gl.uniform3fv(uniform.rotation, rotation);
             gl.uniform3fv(uniform.translation, translation);
             gl.uniform1f(uniform.rho, rho);
             gl.uniform1i(uniform.proj_mode, proj_mode);
+            gl.uniform1f(uniform.timer, timer);
+            gl.drawArrays(gl.POINTS, 0, count);
+        }
+
+    //draw axis
+    if (this.display.draw_axis) {
         
+        var unit = this.params.rho;
+        // var unit = 1; 
+        this.axis = [
+            [0,0,0, unit,0,0],
+            [0,0,0, 0,unit,0],
+            [0,0,0, 0,0,unit]
+        ]
+
+        for (var i = 0; i < this.axis.length; i++) {
+            gl.useProgram(this.programs.axis.program);
+            var attrib = this.programs.axis.attrib;
+            var uniform = this.programs.axis.uniform;
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.axis_buffer);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+            
+            gl.uniform1f(uniform.aspect, aspect);
+            gl.uniform1i(uniform.projection, projection);
+            gl.uniform1f(uniform.scale, scale);
+            gl.uniform3fv(uniform.rotation, rotation);
+            gl.uniform3fv(uniform.translation, translation);
+            gl.uniform1f(uniform.rho, rho);
+            gl.uniform1i(uniform.proj_mode, proj_mode);
+            gl.uniform1f(uniform.timer, timer);
         
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.axes[i]), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.axis[i]), gl.STATIC_DRAW);
             gl.vertexAttribPointer(attrib.point, 3, gl.FLOAT, false, 0, 0);
 
-            gl.uniform3fv(uniform.color, this.axes_colors[i]);
+            gl.uniform3fv(uniform.color, this.axis_colors[i]);
             gl.drawArrays(gl.LINES, 0, 2);
         }
     }
@@ -598,8 +616,6 @@ Object.defineProperty(Lorenz.prototype, 'length', {
  */
 Lorenz.run = function(canvas) {
     var lorenz = new Lorenz(canvas);
-    for (var i = 1; i <= 32; i++)
-        lorenz.add(lorenz.generate());
     function go() {
         lorenz.step();
         lorenz.draw();

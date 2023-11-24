@@ -13,6 +13,7 @@ varying float size;
 
 void main() {
     // vec3 point = project_to_plane(point, proj_mode);
+    float scale = scale * (projection == 0 ? 1.0 : ortho_scale);
 
     vec4 position = vec4(point.xy, point.z - rho, 1);
     gl_Position = view_frustum(radians(45.0), aspect, 0.0, 10.0)

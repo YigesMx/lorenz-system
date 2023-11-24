@@ -9,11 +9,15 @@ uniform float tail_length;
 uniform float max_length;
 uniform float rho;
 uniform int proj_mode;
+uniform float timer;
 
 varying float fade;
 
 void main() {
-    vec3 point = project_to_plane(point, proj_mode);
+    fade = 1.0 - max(0.0, index / (tail_length - 1.0));
+    vec3 point = project_to_plane(point, proj_mode, timer, fade);
+
+    float scale = scale * (projection == 0 ? 1.0 : ortho_scale);
 
     vec4 position = vec4(point.xy, point.z - rho, 1);
     gl_Position = view_frustum(radians(45.0), aspect, 0.0, 10.0)
@@ -23,5 +27,4 @@ void main() {
         * rotate_z(rotation.z)
         * view_scale(scale, scale, scale)
         * position;
-    fade = 1.0 - max(0.0, index / (tail_length - 1.0));
 }

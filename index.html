@@ -13,7 +13,7 @@
 
     <div id="control-panel">
       <ul>
-        <li><kbd>q</kbd>
+        <li><kbd>j</kbd>
           <label>toggle this menu</label>
         </li>
 
@@ -22,12 +22,12 @@
           <li><kbd></kbd>
             <label>left-click + drag: rotate X/Y</label>
           </li>
-          <!-- <li><kbd></kbd>
+          <li><kbd></kbd>
             <label>middle-click + drag: translate X/Y</label>
           </li>
           <li><kbd></kbd>
             <label>shift + click + drag: rotate/translate Z</label>
-          </li> -->
+          </li>
           <li><kbd></kbd>
             <label>mousewheel: zoom in/out</label>
           </li>
@@ -47,11 +47,15 @@
             <label>toggle rotation damp</label>
           </li>
           <br/>
+          <li>
+            <button id="projection" onclick="setValueTriggerInput('option', this.id);">Toggle Perspective/Ortho Projection</button>
+          </li>
           <div class="button-block">
-            <span>projection</span>
+            <span>project on </span>
             <button id="proj-x-y" onclick="setValueTriggerInput('option', this.id);">X-Y</button>
             <button id="proj-x-z" onclick="setValueTriggerInput('option', this.id);">X-Z</button>
             <button id="proj-y-z" onclick="setValueTriggerInput('option', this.id);">Y-Z</button>
+            <span>or</span>
             <button id="proj-non" onclick="setValueTriggerInput('option', this.id);">3D</button>
           </div>
           <div class="button-block">
@@ -61,11 +65,19 @@
             <button id="view-from-y" onclick="setValueTriggerInput('option', this.id);">-Y</button>
             &nbsp;
             <button id="view-from-x" onclick="setValueTriggerInput('option', this.id);">X</button>
+            <br/>
+            <span>(press Z can toggle two direction)</span>
           </div>
+          <br/>
           <div class="button-block">
             <button id="reset-view" onclick="setValueTriggerInput('option', this.id);">Reset View</button>
-            <button id="toggle-axes" onclick="setValueTriggerInput('option', this.id);">Toggle Axes</button>
+            <br/>
+            <button id="toggle-axis" onclick="setValueTriggerInput('option', this.id);">Toggle Axis</button>
+            <button id="toggle-heads" onclick="setValueTriggerInput('option', this.id);">Toggle Heads</button>
+            <button id="toggle-ticker-timer" onclick="setValueTriggerInput('option', this.id);">Ticker-Timer</button>
+            <br/>
             <button id="gentle-rotation" onclick="setValueTriggerInput('option', this.id);">Rotate</button>
+            <button id="toggle-rotation-damping" onclick="setValueTriggerInput('option', this.id);">Toggle Rotation Damp (Slow Down)</button>
           </div>
           <li>
             <input id="length" type="range" min="2" max="14" step="1" oninput="setValueTriggerInput('length-input', this.value)"/>
@@ -74,26 +86,7 @@
           </li>
         </li>
 
-        <li>
-          <h3>Params</h3>
-          <button id="reset-params" onclick="setValueTriggerInput('option', this.id);">Reset Params</button>
-          <li>
-            <br/>
-            <input id="sigma" type="range" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma-input', this.value)"/>
-            <input class="input-box" id="sigma-input" type="number" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma', this.value)"/>
-            <label>&sigma; = <span class="label" id="sigma-label"></span></label>
-          </li>
-          <li>
-            <input id="beta" type="range" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta-input', this.value)"/>
-            <input class="input-box" id="beta-input" type="number" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta', this.value)"/>
-            <label>&beta; = <span class="label" id="beta-label"></span></label>
-          </li>
-          <li>
-            <input id="rho" type="range" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho-input', this.value)"/>
-            <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho', this.value)"/>
-            <label>&rho; = <span class="label" id="rho-label"></span></label>
-          </li>
-        </li>
+        
 
         <li>
           <h3>Solutions</h3>
@@ -146,7 +139,7 @@
 
     <div id="presets-panel">
       <ul>
-        <li><kbd>e</kbd>
+        <li><kbd>k</kbd>
           <label>toggle this menu</label>
         </li>
         <li>
@@ -158,6 +151,35 @@
         </li>
       </ul>
     </div>
+
+    <div id="params-panel">
+      <ul>
+        <li><kbd>l</kbd>
+          <label>toggle this menu</label>
+        </li>
+        <li>
+          <h3>Params</h3>
+          <button id="reset-params" onclick="setValueTriggerInput('option', this.id);">Reset Params</button>
+          <li>
+            <br/>
+            <input id="sigma" type="range" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma-input', this.value)"/>
+            <input class="input-box" id="sigma-input" type="number" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma', this.value)"/>
+            <label>&sigma; = <span class="label" id="sigma-label"></span></label>
+          </li>
+          <li>
+            <input id="beta" type="range" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta-input', this.value)"/>
+            <input class="input-box" id="beta-input" type="number" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta', this.value)"/>
+            <label>&beta; = <span class="label" id="beta-label"></span></label>
+          </li>
+          <li>
+            <input id="rho" type="range" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho-input', this.value)"/>
+            <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho', this.value)"/>
+            <label>&rho; = <span class="label" id="rho-label"></span></label>
+          </li>
+        </li>
+      </ul>
+    </div>
+
     <canvas id="lorenz"></canvas>
   </body>
 </html>

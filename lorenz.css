@@ -14,7 +14,7 @@ canvas {
     height: 100%;
 }
 
-#control-panel, #presets-panel {
+#control-panel, #presets-panel, #params-panel {
     position: absolute;
     z-index: 100;
     background: #444;
@@ -36,17 +36,22 @@ canvas {
     right: 0;
 }
 
-#control-panel ul, #presets-panel ul {
+#params-panel {
+    bottom: 0;
+    right: 0;
+}
+
+ul {
     margin: 0;
     padding: 0;
 }
 
-#control-panel li, #presets-panel li {
+li {
     list-style-type: none;
     font-size: 16px;
 }
 
-#control-panel kbd, #presets-panel kbd {
+kbd {
     font-family: monospace;
     font-size: 20px;
     width: 22px;
@@ -54,7 +59,7 @@ canvas {
     font-weight: bold;
 }
 
-#control-panel h4, #presets-panel h4 {
+h4 {
     color: white;
     font-size: 14px;
     font-weight: bold;
@@ -62,12 +67,12 @@ canvas {
     margin: 10px 5px 5px 0;
 }
 
-#control-panel h4 a, #presets-panel h4 a {
+h4 a {
     color: #aaf;
     text-decoration: none;
 }
 
-#control-panel select, #presets-panel select {
+select {
     width: 100%;
     margin-top: 10px;
 }
