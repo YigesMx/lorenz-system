@@ -271,6 +271,10 @@ Controls.prototype.reset_params = function() {
     this.set_sigma(default_params.sigma);
     this.set_beta(default_params.beta);
     this.set_rho(default_params.rho);
+    this.lorenz.params.rho_disturb_A = default_params.rho_disturb_A;
+    this.lorenz.params.rho_disturb_w = default_params.rho_disturb_w;
+
+    flush_param_inputs(lorenz);
 }
 
 Controls.prototype.toggle_axis = function() {

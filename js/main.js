@@ -4,7 +4,7 @@ var controls = null;
 window.addEventListener('load', function() {
     var canvas = document.querySelector('#lorenz');
     lorenz = Lorenz.run(canvas);
-    flush_params(lorenz);
+    flush_param_inputs(lorenz);
     controls = new Controls(lorenz);
 
     //toggle panels
@@ -41,23 +41,44 @@ window.addEventListener('load', function() {
         h.style.display = 'none';
     });
 
-    var stats = document.querySelector('#stats');
-    function update_stats() {
-        var fps = lorenz.fps;
-        var count = lorenz.solutions.length.toLocaleString();
-        stats.textContent = count + ' @ ' + fps + ' FPS';
-    }
+    update_stats = (function() {
+        var stats = document.querySelector('#stats');
+        
+        return function() {
+            var fps = lorenz.fps;
+            var count = lorenz.solutions.length.toLocaleString();
+            stats.textContent = count + ' solutions @ ' + fps + ' FPS';
+        }
+    })();
+    update_timer = (function() {
+        var timer_label = document.querySelector('#timer-label');
+         return function() {
+            var timer = lorenz.display.timer;
+            timer_label.textContent = timer.toFixed(3);
+        }
+    })();
+
     window.setInterval(update_stats, 1000);
+    window.setInterval(update_timer, 10);
     controls.listeners.push(update_stats);
 
     var option = document.querySelector('#option');
     option.addEventListener('input', function() {
         // console.log(option.value);
 
-        if(option.value === 'reset-params'){ // Controls
+        if(option.value === 'reset-params'){ // Params
 
             controls.reset_params();
-            flush_params(lorenz);
+
+        }if(option.value === 'disturbance-amplitude-input'){
+
+            var disturbance_amplitude = parseFloat(document.querySelector('#'+option.value).value);
+            lorenz.params.rho_disturb_A = disturbance_amplitude;
+
+        }if(option.value === 'disturbance-frequency-input'){
+
+            var disturbance_frequency = parseFloat(document.querySelector('#'+option.value).value);
+            lorenz.params.rho_disturb_w = disturbance_frequency;
 
         }else if(option.value === 'clear'){// Solutions
 
@@ -160,7 +181,7 @@ window.addEventListener('load', function() {
             controls.reset_view();
 
             controls.reset_params();
-            flush_params(lorenz);
+            flush_param_inputs(lorenz);
 
             controls.clear();
             controls.add();
@@ -174,7 +195,7 @@ window.addEventListener('load', function() {
             controls.set_sigma(17.24);
             controls.set_beta(1.1);
             controls.set_rho(217);
-            flush_params(lorenz);
+            flush_param_inputs(lorenz);
 
             controls.clear()
             for (var i = 1; i <= 32; i++)
@@ -205,20 +226,27 @@ var setValueTriggerInput = (function() {
     }
 })();
 
-function flush_params(lorenz) {
-    setTimeout(function() {
-        setValueTriggerInput('length-input', Math.round(Math.log2(lorenz.length)));
-    }, 0);
+function flush_param_inputs(lorenz) {
+    // setTimeout(function() {
+    //     setValueTriggerInput('length-input', Math.round(Math.log2(lorenz.length)));
+    // }, 0);
 
-    setTimeout(function() {
-        setValueTriggerInput('sigma-input', lorenz.params.sigma);
-    }, 50);
+    // setTimeout(function() {
+    //     setValueTriggerInput('sigma-input', lorenz.params.sigma);
+    // }, 50);
 
-    setTimeout(function() {
-        setValueTriggerInput('beta-input', lorenz.params.beta);
-    }, 100);
+    // setTimeout(function() {
+    //     setValueTriggerInput('beta-input', lorenz.params.beta);
+    // }, 100);
 
-    setTimeout(function() {
-        setValueTriggerInput('rho-input', lorenz.params.rho);
-    }, 150);
+    // setTimeout(function() {
+    //     setValueTriggerInput('rho-input', lorenz.params.rho);
+    // }, 150);
+
+    document.getElementById('length-input').value = Math.round(Math.log2(lorenz.length));
+    document.getElementById('sigma-input').value = lorenz.params.sigma;
+    document.getElementById('beta-input').value = lorenz.params.beta;
+    document.getElementById('rho-input').value = lorenz.params.rho;
+    document.getElementById('disturbance-amplitude-input').value = lorenz.params.rho_disturb_A;
+    document.getElementById('disturbance-frequency-input').value = lorenz.params.rho_disturb_w;
 }

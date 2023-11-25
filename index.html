@@ -72,9 +72,11 @@
           <div class="button-block">
             <button id="reset-view" onclick="setValueTriggerInput('option', this.id);">Reset View</button>
             <br/>
+            <button id="toggle-ticker-timer" onclick="setValueTriggerInput('option', this.id);">Toggle Ticker-Timer</button>
+            <label>&tau; = <span class="label" id="timer-label"></span></label>
+            <br/>
             <button id="toggle-axis" onclick="setValueTriggerInput('option', this.id);">Toggle Axis</button>
             <button id="toggle-heads" onclick="setValueTriggerInput('option', this.id);">Toggle Heads</button>
-            <button id="toggle-ticker-timer" onclick="setValueTriggerInput('option', this.id);">Ticker-Timer</button>
             <br/>
             <button id="gentle-rotation" onclick="setValueTriggerInput('option', this.id);">Rotate</button>
             <button id="toggle-rotation-damping" onclick="setValueTriggerInput('option', this.id);">Toggle Rotation Damp (Slow Down)</button>
@@ -116,12 +118,10 @@
             <span style="font-size: smaller;">Number to Add</span>
             <input class="input-box" id="sample-num-input" type="number" min="1" max="128" step="1" value="32"/>
           </div>
-          <br/>
           <div class="button-block">
             <button id="random-with-perturbation" onclick="setValueTriggerInput('option', this.id);">Random (x,y,z) with Perturbation</button>
             <button id="scatter" onclick="setValueTriggerInput('option', this.id);">Random Scatter</button>
           </div>
-          <br/>
           <div>
             <span style="font-size: smaller;">(x, y, z)</span>
             <input class="input-box" id="sample-coord-input-x" type="number" min="-1000" max="1000" step="0.000001" value="30"/>
@@ -183,6 +183,14 @@
             <input id="rho" type="range" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho-input', this.value)"/>
             <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho', this.value)"/>
             <label>&rho; = <span class="label" id="rho-label"></span></label>
+          </li>
+          <li>
+            <span>&rho; disturbance amplitude: A=</span>
+            <input class="input-box" id="disturbance-amplitude-input" type="number" min="0" max="2" step="0.1" value="0" onchange="setValueTriggerInput('option', this.id)"/>
+          </li>
+          <li>
+            <span>&rho; aisturbance frequency: &omega;=</span>
+            <input class="input-box" id="disturbance-frequency-input" type="number" min="0.01" max="10" step="0.01" value="0.1" onchange="setValueTriggerInput('option', this.id)"/>
           </li>
         </li>
       </ul>

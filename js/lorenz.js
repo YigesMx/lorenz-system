@@ -16,6 +16,8 @@ function Lorenz(canvas) {
         sigma: 10,
         beta: parseFloat((8 / 3).toFixed(6)),
         rho: 28 ,
+        rho_disturb_A: 0,
+        rho_disturb_w: 0.1,
         step_size: 0.002,
         steps_per_frame: 3,
         paused: false
@@ -226,9 +228,10 @@ Lorenz.color = function(i) {
  * @param {!number}    ρ
  * @returns {undefined}
  */
-Lorenz.lorenz = function(s, dt, σ, β, ρ) { // 四阶龙格-库塔方法
+Lorenz.prototype.lorenz = function(s, dt, σ, β, ρ) { // 四阶龙格-库塔方法
+    var r = ρ + this.params.rho_disturb_A * Math.sin(this.params.rho_disturb_w * this.display.timer);
     function dx(x, y, z) { return σ * (y - x); }
-    function dy(x, y, z) { return x * (ρ - z) - y; }
+    function dy(x, y, z) { return x * (r - z) - y; }
     function dz(x, y, z) { return x * y - β * z; }
 
     var x = s[0];
@@ -313,7 +316,7 @@ Lorenz.prototype.step = function() {
             var tail_index = this.tail_index;
             this.tail_index = (this.tail_index + 1) % length;
             for (var i = 0; i < this.solutions.length; i++)  {
-                Lorenz.lorenz(this.solutions[i], dt, σ, β, ρ);
+                this.lorenz(this.solutions[i], dt, σ, β, ρ);
                 var base = i * length * 3 + tail_index * 3;
                 tail[base + 0] = this.solutions[i][0];
                 tail[base + 1] = this.solutions[i][1];
