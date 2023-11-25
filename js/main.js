@@ -53,13 +53,7 @@ window.addEventListener('load', function() {
     var option = document.querySelector('#option');
     option.addEventListener('input', function() {
         // console.log(option.value);
-        var num_of_sample_to_add = document.querySelector('#sample-num-input').value;
-        var x = document.querySelector('#sample-coord-input-x').value;
-        var y = document.querySelector('#sample-coord-input-y').value;
-        var z = document.querySelector('#sample-coord-input-z').value;
-        //转为float数组
-        var coord = [parseFloat(x), parseFloat(y), parseFloat(z)];
-        // console.log(num_of_sample_to_add);
+
         if(option.value === 'reset-params'){ // Controls
 
             controls.reset_params();
@@ -70,17 +64,25 @@ window.addEventListener('load', function() {
             controls.clear();
 
         }else if(option.value === 'random-with-perturbation'){
-
+            
+            var num_of_sample_to_add = document.querySelector('#sample-num-input').value;
             controls.add();
             for (var i = 1; i <= num_of_sample_to_add - 1; i++)
                 controls.clone();
 
         }else if(option.value === 'scatter'){
-
+            
+            var num_of_sample_to_add = document.querySelector('#sample-num-input').value;
             for (var i = 1; i <= num_of_sample_to_add; i++)
                 controls.add();
 
         }else if(option.value === 'coord-with-perturbation'){
+            
+            var num_of_sample_to_add = document.querySelector('#sample-num-input').value;
+            var x = document.querySelector('#sample-coord-input-x').value;
+            var y = document.querySelector('#sample-coord-input-y').value;
+            var z = document.querySelector('#sample-coord-input-z').value;
+            var coord = [parseFloat(x), parseFloat(y), parseFloat(z)];
 
             controls.add(coord);
             for (var i = 1; i <= num_of_sample_to_add - 1; i++)
@@ -142,23 +144,30 @@ window.addEventListener('load', function() {
 
             controls.toggle_rotation_damping();
 
+        }else if (option.value === 'steps-per-frame-input') {
+            
+            var steps_per_frame = parseInt(document.querySelector('#'+option.value).value);
+            lorenz.params.steps_per_frame = steps_per_frame;
+
+        }else if (option.value === 'ticker-speed-input') {
+
+            var ticker_speed = parseFloat(document.querySelector('#'+option.value).value)/10.0;
+            lorenz.display.ticker_speed = ticker_speed;
+
         }else if (option.value === 'chaos') { // Presets
+
+            lorenz.display.scale = 1 / 25;
+            controls.reset_view();
+
+            controls.reset_params();
+            flush_params(lorenz);
 
             controls.clear();
             controls.add();
             for (var i = 1; i <= 32-1; i++)
                 controls.clone();
 
-            lorenz.display.scale = 1 / 25;
-            
-            controls.reset_params();
-            flush_params(lorenz);
-
         }else if (option.value === 'bendy') {
-
-            controls.clear()
-            for (var i = 1; i <= 32; i++)
-                controls.add();
 
             lorenz.display.scale = 1 / 65;
 
@@ -166,6 +175,10 @@ window.addEventListener('load', function() {
             controls.set_beta(1.1);
             controls.set_rho(217);
             flush_params(lorenz);
+
+            controls.clear()
+            for (var i = 1; i <= 32; i++)
+                controls.add();
 
         }
     });

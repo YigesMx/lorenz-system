@@ -245,6 +245,7 @@ Controls.prototype.view_from_z = (function() {
 
 Controls.prototype.proj_none = function() {
     this.lorenz.display.proj_mode = 0;
+    this.disable_ticker_timer();
 };
 
 Controls.prototype.proj_on_xy = function() {
@@ -283,13 +284,21 @@ Controls.prototype.rotate = function(w) {
     this.lorenz.display.damping = false;
 }
 
+Controls.prototype.enable_ticker_timer = function() {
+    this.lorenz.display.timer = 0;
+    this.lorenz.display.roll = 1;
+};
+
+Controls.prototype.disable_ticker_timer = function() {
+    this.lorenz.display.timer = 0;
+    this.lorenz.display.roll = 0;
+}
+
 Controls.prototype.toggle_ticker_timer = function() {
     if(this.lorenz.display.roll == 0){
-        this.lorenz.display.timer = 0;
-        this.lorenz.display.roll = 1;
+        this.enable_ticker_timer();
     }else{
-        this.lorenz.display.timer = 0;
-        this.lorenz.display.roll = 0;
+        this.disable_ticker_timer();
     }
 };
 

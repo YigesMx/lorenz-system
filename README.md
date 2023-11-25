@@ -18,6 +18,8 @@ I fixed some problems and add some features to the original project:
     - Reset View.
     - Toggle Axes.
     - Toggle Ticker-Timer: If toggled on, when the solutions project on a plane, the time axis will be displayed on the normal direction.
+    - Modify steps of simulation per frame (speed).
+    - Modify the Ticker-Timer's speed (scale of the time axis).
   - Solutions
     - Add solutions at a specific point.
   - Presets 

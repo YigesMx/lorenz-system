@@ -31,6 +31,7 @@ function Lorenz(canvas) {
         proj_mode: 0,
         timer: 0,
         roll: 0,
+        ticker_speed: 1,
         damping: false,
         _length: 512 // change through length getter/setter
     };
@@ -382,7 +383,7 @@ Lorenz.prototype.draw = function() {
     var translation = this.display.translation;
     var rho = this.params.rho;
     var proj_mode = this.display.proj_mode;
-    var timer = this.display.timer;
+    var timer = this.display.timer * this.display.ticker_speed;
     var start = (this.tail_index - 1 + length) % length;
 
     //draw tails

@@ -80,9 +80,17 @@
             <button id="toggle-rotation-damping" onclick="setValueTriggerInput('option', this.id);">Toggle Rotation Damp (Slow Down)</button>
           </div>
           <li>
-            <input id="length" type="range" min="2" max="14" step="1" oninput="setValueTriggerInput('length-input', this.value)"/>
-            <input class="input-box" id="length-input" type="number" min="2" max="14" step="1" oninput="setValueTriggerInput('length', this.value)"/>
+            <input id="length" type="range" min="2" max="15" step="1" oninput="setValueTriggerInput('length-input', this.value)"/>
+            <input class="input-box" id="length-input" type="number" min="2" max="15" step="1" oninput="setValueTriggerInput('length', this.value)"/>
             <label>tail = <span class="label" id="length-label"></span></label>
+          </li>
+          <li>
+            <span>steps per frame (simulation speed):</span>
+            <input class="input-box" id="steps-per-frame-input" type="number" min="1" max="20" step="1" value="3" oninput="setValueTriggerInput('option', this.id)"/>
+          </li>
+          <li>
+            <span>ticker speed (time axis scale):</span>
+            <input class="input-box" id="ticker-speed-input" type="number" min="3" max="20" step="1" value="10" oninput="setValueTriggerInput('option', this.id)"/>
           </li>
         </li>
 
