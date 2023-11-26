@@ -23,7 +23,7 @@ window.addEventListener('load', function() {
     window.addEventListener('keypress', function(e) {
         if (e.which === 'j'.charCodeAt(0)) {
             var h = document.querySelector('#control-panel');
-            h.style.display = h.style.display == 'none' ? 'block' : 'none';
+            h.style.display = h.style.display == 'none' ? 'flex' : 'none';
         }
     });
     window.addEventListener('touchstart', function self(e) {
@@ -45,7 +45,7 @@ window.addEventListener('load', function() {
     window.addEventListener('keypress', function(e) {
         if (e.which === 'l'.charCodeAt(0)) {
             var h = document.querySelector('#params-panel');
-            h.style.display = h.style.display == 'none' ? 'block' : 'none';
+            h.style.display = h.style.display == 'none' ? 'flex' : 'none';
         }
     });
     window.addEventListener('touchstart', function self(e) {
