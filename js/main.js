@@ -1,6 +1,18 @@
 var lorenz = null;
 var controls = null;
 
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+      ],
+      throwOnError : false
+    });
+});
+
 window.addEventListener('load', function() {
     var canvas = document.querySelector('#lorenz');
     lorenz = Lorenz.run(canvas);
@@ -22,7 +34,7 @@ window.addEventListener('load', function() {
     window.addEventListener('keypress', function(e) {
         if (e.which === 'k'.charCodeAt(0)) {
             var h = document.querySelector('#presets-panel');
-            h.style.display = h.style.display == 'none' ? 'block' : 'none';
+            h.style.display = h.style.display == 'none' ? 'flex' : 'none';
         }
     });
     window.addEventListener('touchstart', function self(e) {
@@ -57,9 +69,20 @@ window.addEventListener('load', function() {
             timer_label.textContent = timer.toFixed(3);
         }
     })();
+    update_fix_p = (function() {
+        var fix_p_xy_label = document.querySelector('#fix-p-xy-label');
+        var fix_p_z_label = document.querySelector('#fix-p-z-label');
+         return function() {
+            var xy = Math.sqrt(lorenz.params.beta * (lorenz.params.rho - 1));
+            var z = lorenz.params.rho - 1;
+            fix_p_xy_label.textContent = xy.toFixed(5);
+            fix_p_z_label.textContent = z.toFixed(5);
+        }
+    })();
 
     window.setInterval(update_stats, 1000);
     window.setInterval(update_timer, 10);
+    window.setInterval(update_fix_p, 500);
     controls.listeners.push(update_stats);
 
     var option = document.querySelector('#option');
@@ -175,7 +198,7 @@ window.addEventListener('load', function() {
             var ticker_speed = parseFloat(document.querySelector('#'+option.value).value)/10.0;
             lorenz.display.ticker_speed = ticker_speed;
 
-        }else if (option.value === 'chaos') { // Presets
+        }else if (option.value === 'preset-rho28-chaos') { // Presets
 
             lorenz.display.scale = 1 / 25;
             controls.reset_view();

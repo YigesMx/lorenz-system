@@ -29,17 +29,83 @@ canvas {
 #control-panel {
     top: 0;
     left: 0;
+
+    width: 25%;
+    height: 90%;
+    max-height: 900px;
+
+    display: flex;  /* 使用 Flexbox 布局 */
+    flex-direction: column;
+}
+
+#control-contents {
+    width: 100%;  /* 宽度 */
+    flex-grow: 1;
+}
+
+#stats {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    color: rgb(116, 125, 140);
+    font-weight: bold;
+    font-size: 14px;
 }
 
 #presets-panel {
     top: 0;
     right: 0;
+
+    width: 35%;
+    height: 60%;
+
+    display: flex;  /* 使用 Flexbox 布局 */
+    flex-direction: column;
+}
+
+#presets-contents {
+    width: 100%;  /* 宽度 */
+    flex-grow: 1;
 }
 
 #params-panel {
     bottom: 0;
     right: 0;
+
+    width: 25%;
+    height: 34%;
+
+    display: flex;  /* 使用 Flexbox 布局 */
+    flex-direction: column;
 }
+
+#params-contents {
+    width: 100%;  /* 宽度 */
+    flex-grow: 1;
+}
+
+.scrollable {
+    overflow-y: auto;  /* 垂直滚动 */
+    background: transparent;  /* 背景透明 */
+
+    /* 自定义滚动条样式 */
+    scrollbar-width: thin;  /* 滚动条宽度 */
+    scrollbar-color: rgba(255, 255, 255, 1);  /* 滚动条颜色 */
+}
+
+.scrollable::-webkit-scrollbar {
+    width: 5px;  /* 宽度 */
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background: transparent;  /* 滚动条轨道颜色 */
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);  /* 滚动条颜色 */
+    border-radius: 5px;  /* 圆角 */
+}
+
 
 ul {
     margin: 0;
@@ -59,7 +125,30 @@ kbd {
     font-weight: bold;
 }
 
-h4 {
+h1, h2, h3{
+    color: rgb(255, 255, 255);
+    margin-bottom: 0;
+}
+
+h2 .title-span {
+    font-family: 'monospace';
+    font-weight: bold;
+    color: #aaa;
+}
+
+h3 .title-span {
+    font-family: 'monospace';
+    font-weight: bold;
+    color: rgb(161, 161, 161);
+}
+
+h4 .title-span {
+    font-family: 'monospace';
+    font-weight: bold;
+    color: rgb(148, 148, 148);
+}
+
+h5 {
     color: white;
     font-size: 14px;
     font-weight: bold;
@@ -67,22 +156,28 @@ h4 {
     margin: 10px 5px 5px 0;
 }
 
-h4 a {
+h5 a {
     color: #aaf;
     text-decoration: none;
+    font-family: monospace;
 }
 
-select {
-    width: 100%;
-    margin-top: 10px;
+strong {
+    color:rgb(166, 216, 166);
 }
 
-#stats {
-    position: absolute;
-    bottom: 5px;
-    left: 5px;
-    font-weight: bold;
-    font-size: 14px;
+p {
+    color: rgb(206, 214, 224);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.simulation-block {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+
+    padding: 3px !important;
+    margin-top: 5px;
 }
 
 .input-box {
@@ -91,4 +186,11 @@ select {
 
 .label {
     width: 40px;
+}
+
+#chaos-def {
+    padding-left: 30px;  /* 缩进 */
+}
+#chaos-def li{
+    list-style-type: disc;  /* 圆点 */
 }

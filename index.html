@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Lorenz System</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-    <link rel="stylesheet" href="lorenz.css"/>
-    <script src="js/lorenz.js" defer></script>
-    <script src="js/controls.js" defer></script>
-    <script src="js/main.js" defer></script>
-  </head>
-  <body>
-    <input type="hidden" id="option">
-
-    <div id="control-panel">
+<head>
+  <title>Lorenz System</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <link rel="stylesheet" href="lorenz.css"/>
+  <script src="js/lorenz.js" defer></script>
+  <script src="js/controls.js" defer></script>
+  <script src="js/main.js" defer></script>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+</head>
+<body>
+  <input type="hidden" id="option">
+  
+  <div id="control-panel">
+    <ul>
+      <li><kbd>j</kbd>
+        <label>toggle this menu</label>
+      </li>
+    </ul>
+    <div class="scrollable" id="control-contents">
       <ul>
-        <li><kbd>j</kbd>
-          <label>toggle this menu</label>
-        </li>
-
         <li>
-          <h3>Display</h3>
+          <h1>Display</h1>
           <li><kbd></kbd>
             <label>left-click + drag: rotate X/Y</label>
           </li>
@@ -49,6 +55,7 @@
           <br/>
           <li>
             <button id="projection" onclick="setValueTriggerInput('option', this.id);">Toggle Perspective/Ortho Projection</button>
+            <label>: <span class="label" id="projection-label">Perspective</span></label>
           </li>
           <div class="button-block">
             <span>project on </span>
@@ -60,20 +67,19 @@
           </div>
           <div class="button-block">
             <span>view from</span>
-            <button id="view-from-z" onclick="setValueTriggerInput('option', this.id);">Z</button>
+            <button id="view-from-z" onclick="setValueTriggerInput('option', this.id);" title="(press Z mutiple times to toggle 2 direction)">Z</button>
             &nbsp;
             <button id="view-from-y" onclick="setValueTriggerInput('option', this.id);">-Y</button>
             &nbsp;
             <button id="view-from-x" onclick="setValueTriggerInput('option', this.id);">X</button>
-            <br/>
-            <span>(press Z can toggle two direction)</span>
+            <span style="font-size: 50%;">(hover on Z for more info)</span>
           </div>
           <br/>
           <div class="button-block">
             <button id="reset-view" onclick="setValueTriggerInput('option', this.id);">Reset View</button>
             <br/>
             <button id="toggle-ticker-timer" onclick="setValueTriggerInput('option', this.id);">Toggle Ticker-Timer</button>
-            <label>&tau; = <span class="label" id="timer-label"></span></label>
+            <label>$\tau = $ <span class="label" id="timer-label"></span></label>
             <br/>
             <button id="toggle-axis" onclick="setValueTriggerInput('option', this.id);">Toggle Axis</button>
             <button id="toggle-heads" onclick="setValueTriggerInput('option', this.id);">Toggle Heads</button>
@@ -95,11 +101,9 @@
             <input class="input-box" id="ticker-speed-input" type="number" min="3" max="20" step="1" value="10" oninput="setValueTriggerInput('option', this.id)"/>
           </li>
         </li>
-
         
-
         <li>
-          <h3>Solutions</h3>
+          <h1>Solutions</h1>
           <li><kbd>a</kbd>
             <label>add solution with random initial value</label>
           </li>
@@ -110,9 +114,9 @@
             <label>clear all solutions</label>
           </li>
           <!-- <br/>
-          <div class="button-block">
-            <button id="clear" onclick="setValueTriggerInput('option', this.id);">Clear</button>
-          </div> -->
+            <div class="button-block">
+              <button id="clear" onclick="setValueTriggerInput('option', this.id);">Clear</button>
+            </div> -->
           <br/>
           <div>
             <span style="font-size: smaller;">Number to Add</span>
@@ -132,70 +136,441 @@
             <button id="coord-with-perturbation" onclick="setValueTriggerInput('option', this.id);">At (x, y, z) with Perturbation</button>
           </div>
         </li>
-
-        
-        
       </ul>
-      <h4>
+      <h5>
         <a href="https://github.com/skeeto/lorenz-webgl">Original Repository</a>
-      </h4>
-      <h4>
+      </h5>
+      <h5>
         <a href="#">Source Repository</a>
-      </h4>
-      <div id="stats"></div>
+      </h5>
     </div>
-
+  </div>
+  <div id="stats"></div>
+    
     <div id="presets-panel">
       <ul>
-        <li><kbd>k</kbd>
+        <li>
+          <kbd>k</kbd>
           <label>toggle this menu</label>
         </li>
-        <li>
-          <h3>Presets</h3>
-          <div class="button-block">
-            <button id="chaos" onclick="setValueTriggerInput('option', this.id);">Chaos</button>
-            <button id="bendy" onclick="setValueTriggerInput('option', this.id);">Bendy</button>
-          </div>
-        </li>
       </ul>
-    </div>
+      <h1>Notes & Presets</h1>
+      <p>
+        为了方便地观察下方的 Presets，除了自行使用左侧面板的视角控制器外，这里也提供以下按钮快速重置两种视角：
+        <button id="preset-normal-view" onclick="setValueTriggerInput('option', this.id);">3D view</button>
+        <button id="preset-xt-view" onclick="setValueTriggerInput('option', this.id);">x-t view</button>
+      </p>
+      <div class="scrollable" id="presets-contents">
+        <h2><span class="title-span">0.</span> 前言</h2>
+        <p>
+          本笔记主要根据《Nonlinear Dynamics and Chaos With Applications to Physics, Biology, Chemistry, and Engineering》(Steven H. Strogatz)
+          一书中第五章的内容，讨论 Lorenz 方程的参数空间，以及参数对系统的影响。
+        </p>
+        <p>
+          笔者也尝试过使用 Mathematica 或其他数值/符号计算软件对 Lorenz 方程进行分析，但这些软件大部分局限于 CPU 计算，
+          在仿真的实时性、交互性上较差，于是笔者想到了结合正在学习的另一门计算机图形学的课程，
+          使用 WebGL 调用 GPU 来进行并行的实时仿真和交互。于是本笔记的主要内容就是基于这个想法与检索到的开源仓库，
+          经过大量的修改完善完成的。
+        </p>
+        
+        <h2><span class="title-span">1.</span> 混沌 与 Lorenz Equation</h2>
 
+        <h3><span class="title-span">1.1</span> 混沌的定义</h3>
+        <p>
+          <ul id="chaos-def">
+            <li>确定非周期性</li>
+            <li>对初值的敏感依赖性</li>
+            <li>长期行为的不可预测性</li>
+            <li>紧致性：一个紧致系统的每一条轨道都有极限集</li>
+          </ul>
+        </p>
+
+        <h3><span class="title-span">1.2</span> Lorenz 方程的定义</h3>
+        <details>
+          <summary>
+            Lorentz 方程来源
+          </summary>
+          <p>
+            Lorentz 方程是基于纳维－斯托克斯方程、连续性方程和热传导方程简化得出，最初的形式为：
+            $$
+            \begin{aligned}
+            \frac { \partial \vec v }{\partial t} + \left( \vec v \nabla \right) \vec v &=
+            -\frac {\nabla p}{\rho} + \nu \nabla ^2 \vec v + \vec g \\
+            {\frac {\partial \rho }{\partial t}}+\nabla \cdot \left(\rho {\vec {v}}\right) &= 0 \\
+            {\frac {\partial T}{\partial t}}+\nabla \cdot \left(T{\vec {v}}\right) &= \chi \nabla ^{2}T \\
+            \end{aligned}
+            $$
+            其中，$\vec v$ 为流速，$\rho$ 为流体密度，$T$ 为流体温度。$T_0$ 为上限温度，
+            $p$ 为压强，$\vec g$ 为重力加速度，$\nu$ 为运动粘度系数，$\chi$ 为热扩散系数，$\gamma$ 为热膨胀系数。
+            简化后获得上述 Lorenz方程。
+            <h4>from <a href="https://zh.wikipedia.org/wiki/%E6%B4%9B%E4%BC%A6%E8%8C%A8%E5%90%B8%E5%BC%95%E5%AD%90">wikipedia</a></h4>
+          </p>
+        </details>
+        <p>
+          $$
+          \begin{aligned}
+            \dot{x} &= \sigma \left(y-x\right) \\
+            \dot{y} &= \rho x - y - xz \\
+            \dot{z} &= xy - \beta z\\
+          \end{aligned}
+          $$
+          式中，参数 $\sigma \gt 0,\rho \gt 0,\beta \gt 0$，$\sigma$ 为 Prandtl 数，$\rho$ 为 Rayleigh 数，$\beta$ 为几何参数（在对流问题中与卷的纵横比有关）。
+        </p>
+
+        <h2><span class="title-span">2.</span> 参数空间的讨论</h2>
+        <p>
+          在参数空间中，Lorenz 方程的解的性质随参数的变化而变化。
+          三个参数中，$\sigma$ 和 $\beta$ 主要由系统本身决定，一般而言为常数。
+          $\rho$ 可以理解为外界环境对系统的影响，因此无论 $\sigma$ 和 $\beta$ 取何值，都可以调节 $\rho$ 来达到一致的性质。
+          所以在前两个参数固定时，可以通过改变 $\rho$ 来改变系统的性质。
+        </p>
+        <p>
+          特别的参考各个文献，可以固定 $\sigma = 10$，$\beta = \frac{8}{3}$，来讨论 $\rho$ 的影响。
+        </p>
+        <div>
+          <h3><span class="title-span">2.1</span> $\rho \lt 1 $ </h3>
+          <p>
+            当 $\rho \lt 1 $ 时，经过课本中 9.2 的讨论，即通过对线性化系统的讨论和 Lyapunov 函数的构造，
+            可以证明系统有全局稳定的不动点 $(0,0,0)$。
+
+          </p>
+          <div class="simulation-block">
+            <p>
+              例如，以下是对 $\rho = 0.5$ 的仿真结果：
+              <button id="preset-rho05-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+          </div>
+          
+          <h3><span class="title-span">2.2</span> $\rho = 1$ </h3>
+          <p> 
+            当 $\rho = 1$ 时，系统发生叉式分岔，但原点处依然稳定。并在所有的 $\rho > 1$ 后，出现两个新的不动点，记为 $ C^+$ 和 $C^-$：
+            $$
+            \begin{aligned}
+              x^* = y^* &= \pm \sqrt{\beta(\rho - 1)} \\
+              z^* &= \rho - 1
+            \end{aligned}
+            $$
+            并且此后原点变为一个不稳定的不动点。
+          </p>
+
+          <h3><span class="title-span">2.3</span> $1 \lt \rho \lt 13.926$ </h3>
+          <p>
+            当 $1 \lt \rho \lt 13.926$ 时，$C^+$ 和 $C^-$ 为稳定的不动点，原点为不稳定的不动点。
+            并且 $C^+$ 和 $C^-$ 之间的距离随 $\rho$ 的增大而增大。
+          </p>
+          <div class="simulation-block">
+            <p>
+              例如，以下是对 $\rho = 10$ 的仿真结果，也可以自行调整 $\rho$ 的值观察此区间内解的变化：
+              <button id="preset-rho10-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+          </div>
+
+          <h3><span class="title-span">2.4</span> $\rho = 13.926$ </h3>
+          <p>
+            当 $\rho = 13.926$ 时，系统发生同宿分岔，$\rho = 13.926^+$ 时，系统产生两个鞍环，由书中 9.2 节所述，
+            这是只有在大于等于三维的动力系统中会出现的一种不稳定极限环。
+          </p>
+
+          <h3><span class="title-span">2.5</span> $13.926 \lt \rho \lt \rho_H = 24.74 $ </h3>
+          <p>
+            当 $13.926 \lt \rho \lt r_H = 24.74 $ 时，两个鞍环快速向 $C^+$ 和 $C^-$ 靠近。
+          </p>
+
+          <h4><span class="title-span">2.5.1</span> $13.926 \lt \rho \lt r_H = 24.06 $</h4>
+          <p>
+            当 $13.926 \lt \rho \lt r_H = 24.06 $ 时，一个解除了直接、稳定地收敛到 $C^+$ 或 $C^-$ 外，
+            还有可能会在两个鞍环之间来回震荡，并在可能相当长的时间后最终都会收敛到 $C^+$ 或 $C^-$。
+            这也被称为<strong>“暂态混沌”</strong>，按书中所述，这种情况也被称为“亚稳态混沌”或“预湍流”。
+          </p>
+          <p>
+            根据书中所述，在 $ \rho = 13.926 $ 时，产生了非常复杂的不变集，这个集是一簇无限多个鞍环和非周期轨道组成的，
+            他不是吸引子，也无法直接观察，所有其附近的解都对初值条件极其敏感。但解在这个集合附近杂乱无章地运动一段时间后依然会落到 $C^+$ 或 $C^-$。
+          </p>
+          <p>
+            这种情况下，一方面，按照 9.3 或前面给出的定义，动力系统并不是“混沌”的，因为其足够长期的行为并不是非周期的。
+            另一方面，此时的动力系统依然表现出了对初始条件的极度敏感，即对一个初值条件加以轻微的扰动，
+            他就可能从收敛到 $C^+$ 变为收敛到 $C^-$，或反之。
+          </p>
+          <div class="simulation-block">
+            <p>
+              例如，以下是对 $\rho = 21$ 的全局仿真结果（书中例9.5.1）：
+              <button id="preset-rho21-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+            <p>
+              当然不是所有轨道都会出现暂态混沌，参考习题 9.5.6，我们找出 $\rho = 21$ 时，
+              出现暂态混沌的三个初始条件，和不会出现暂态混沌的三个初始条件，分别作模拟：
+              <button id="preset-rho21-1" onclick="setValueTriggerInput('option', this.id);">暂态混沌</button>
+              <button id="preset-rho21-2" onclick="setValueTriggerInput('option', this.id);">非暂态混沌</button>
+            </p>
+            <p>
+              如下给出预测初始条件能否导致暂态混沌的经验规则：如果离 $C^+$ 和 $C^-$ 的距离接近，
+              那么大概率不会发生瞬态混沌，若距离远则很容易发生瞬态混沌。
+            </p>
+          </div>
+
+          <h4><span class="title-span">2.5.2</span> $24.06 \lt \rho \lt r_H = 24.74 $ </h4>
+          <p>
+            当 $\rho$ 非常接近 $13.926$ 时，鞍环较大，很难出现暂态混沌，系统比较容易收敛。
+            而当 $\rho$ 较大时，书中讲到，[Yorke and Yorke, 1979] 最终证明了，
+            在 $\rho$ 增大来到 $\gt 24.06$ 时，一个解在前面所提到的不变集附近游荡的时间就会变成 $\infty$，
+            不变集变为一个<strong>“奇怪吸引子”</strong>。
+          </p>
+          <p>
+            书中 9.3 节对这个奇怪吸引子做了分析（虽然是对 $\rho = 28$ 分析讲解，但是是有普适性的）。
+            这个吸引子不是不动的、稳定的，但其体积为 $0$，满足分析的体积收缩性质。
+            此外，看起来它由两个曲面聚合而成，但由解的唯一性理论，这并不会发生。
+            事实上，这是由无穷多离散的“曲面”组成的，有无穷大的面积而体积为 $0$ 的点集。
+            这个奇怪吸引子也被称为<strong>“分形”</strong>，经分析它的纬度为 $D \approx 2.05$，这也在书的后续章节进行了讨论。
+          </p>
+          <p>
+            所以在 $24.06 \lt \rho \lt 24.74$ 时，系统有两种吸引子：一种是不动点 $C^+$ 和 $C^-$，另一个是奇怪吸引子。
+          </p>
+          <p>
+            此时一个解要么被吸引到 $C^+$ 和 $C^-$，要么被吸引到奇怪吸引子。
+
+            若解被吸引到奇怪吸引子，那么其轨道将会在奇怪吸引子附近无限长时间游荡，为紧致的，且轨道是非周期的，
+            按照 9.3 或前面的定义，这是一种混沌的状态。
+
+            若解被吸引到 $C^+$ 或 $C^-$，虽然可能先会进入暂态混沌的形式，即在离不变集一段距离内游荡一段时间后收敛，
+            但最终状态是稳定的，长期行为是确定的。
+          </p>
+          <p>
+            综上，虽然有的解是稳定的，即整个系统不满足混沌的定义，但系统会进入到近似混沌的状态。
+          </p>
+          <div class="simulation-block">
+            <p>
+              下面是对 $\rho = 24.3$ 的局部仿真结果: 
+              <button id="preset-rho243-local" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+            <p>
+              在这个参数下，两个不动点坐标近似为：
+              $$
+              \begin{aligned}
+                C^+ &= (\ 7.88247,\ 7.88247, 23.30)\\
+                C^- &= (-7.88247, -7.88247, 23.30)
+              \end{aligned}
+              $$
+              这个仿真选择了 $5$ 个初始条件：
+              $$
+              \begin{aligned}
+                s_1 &= (5.5, 5.5, 23.30)\\
+                s_2 &= (5.6, 5.6, 23.30)\\
+                s_3 &= (5.7, 5.7, 23.30)\\
+                s_4 &= (5.8, 5.8, 23.30)\\
+                s_5 &= (5.9, 5.9, 23.30)
+              \end{aligned}
+              $$
+              可以看到，$s_1$ 和 $s_2$ 缓慢离开极限环向外，被奇怪吸引子吸引，最终进入混沌态，在奇怪吸引子附近呈现复杂无规律的运动。
+              并且注意这不是暂态混沌，是无限长时间在奇怪吸引子附近游荡，不会被 $C^+$ 或 $C^-$ 吸引。
+              而 $s_3$ 很靠近极限环，但其还是缓慢离开极限环向内，最终和 $s_4$ 以及 $s_5$ 都被 $C^+$ 吸引并收敛。
+            </p>
+            <p>
+              下面是对 $\rho = 24.3$ 的全局仿真结果: 
+              <button id="preset-rho243-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+            <p>
+              可以注意到一些解逐步向内离开极限环，最终都被 $C^+$ 或 $C^-$ 吸引。
+              而另一些点则在奇怪吸引子附近混沌地游荡，它们最终都不会被 $C^+$ 或 $C^-$ 吸引。
+            </p>
+          </div>
+
+          <h4><span class="title-span">2.5.3</span> 不动点和奇怪吸引子之间的滞后性</h4>
+          <p>
+            参考习题 9.5.4：假设我们稍微增加或减少 $\rho$ 的值，特别的令 $\rho = 24.4 + \sin\left( \omega t \right)$，
+            其中 $\omega$ 是一个很小的常数，比吸引子的通常轨道的近似角频率要小。我们可以发现一个介于平衡点和混沌态之间的令人吃惊的滞后。
+            书中 9.5 节对此也做了如下描述：这意味着一个足够大的扰动能够使一个稳定运动的水车变成一个永久的混沌水车。
+          </p>
+          <p>
+            当然这个分析涉及到 $\rho \gt \rho_H$ 的情况，这在之后会进行讨论，这里简要说明当 $\rho$ 少量超过这个界限时，
+            系统仅存在一个奇怪吸引子，系统为全局混沌的。
+          </p>
+          <div class="simulation-block">
+            <p>
+              例如，以下是对 $\rho = 24.4 + \sin\left( \omega t \right)$ 的全局随机仿真结果：
+              <button id="preset-rho2404-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+          </div>
+
+          <h3><span class="title-span">2.6</span> $\rho = \rho_H = 24.74 $ </h3>
+          <p>
+            当 $\rho = \rho_H$ 时，两个鞍环与 $C^+$ 和 $C^-$ 合并，系统发生亚临界 Hopf 分岔（$\rho$ 从大到小来看是分岔），
+            此时 $C^+$ 和 $C^-$ 变为不稳定不动点。
+          </p>
+
+          <h3><span class="title-span">2.7</span> $24.74 \lt \rho \lt 313 $ </h3>
+          <p>
+            此后 $C^+$ 和 $C^-$ 变为不稳定不动点，所有靠近的解都将被排斥到较远的吸引子。
+            但我们知道，这个系统有体积收缩的性质，所以他不能被排斥到无穷远，而是会被排斥到一个有限的区域内。
+            但从分岔图上来看，我们看不到任何稳定轨道或不动点等吸引子的迹象。
+            <strong>插图！！！</strong>
+            所以在这个范围一定有奇特的现象发生。
+            现在我们知道，这一切都是一个或若干奇怪吸引子的作用（当然还有例外，后面会提到）。
+          </p>
+
+          <h4><span class="title-span">2.7.1</span> $24.74 \lt \rho \leq 28 $ </h4>
+          <p>
+            课本 9.4 节，介绍了 lorenz 及一些学者的工作。这些工作对略微大于 $24.74$ 的情况排除了稳定极限环，
+            并且证明了 lorenz 方程事实上存在奇怪吸引子，并不是数值模拟造成的“错觉”。
+          </p>
+          <p>
+            结论是，在 $\rho \gt \rho_H = 24.74 $ 后的一段 $\rho$ 范围内，系统只有一个奇怪吸引子，系统呈现全局的混沌状态：
+            所有的解都会被奇怪吸引子吸引，在附近不规则、无周期地游荡。
+          </p>
+          <div class="simulation-block">
+            <p>
+              例如，以下是对 $\rho = 28$ 的全局随机仿真结果：
+              <button id="preset-rho28-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+            <p>
+              这也是书中例 9.3 讨论的部分，这部分除了展示这种混沌特性外，还证明了相邻轨道的指数速度分离，并给出了混沌和奇怪吸引子的一种定义。
+              其中的一些内容也在前面提及奇怪吸引子时有所涉及。
+            </p>
+            <p>
+              我们也可以通过选择一系列初始非常接近的点（或者说对一个初值进行微小扰动），来直观感受“对初值的敏感依赖性”：
+              <button id="preset-rho28-chaos" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+          </div>
+
+          <h4><span class="title-span">2.7.2</span> $28 \lt \rho \lt 313 $ </h4>
+          <p>
+            这个范围的变得更为复杂，书中 9.5.2 提到，对于这个范围的绝大多数 $\rho$ 值，
+            都发现了混沌现象，但也有周期行为的小窗口穿插进来。书中提到，最大的三个有周期行为的窗口是：
+            $$
+            \begin{aligned}
+              99.524 &\lt \rho \lt 100.795 \\
+              145 &\lt \rho \lt 166 \\
+              214 &\lt \rho \lt 313
+            \end{aligned}
+            $$
+            下面将结合书中习题，选取一些区间或值进行一些模拟分析：
+          </p>
+          <div class="simulation-block">
+            <p>
+              首先，参考习题 9.5.1 和 9.5.3，对 $145 \lt \rho \lt 166$ 及附近的值进行仿真分析和大致分类。我们从 $\rho $
+              由大到小的变化来详细看看这一过程：
+            </p>
+            <p>
+              当 $ \rho > 166.07 $ （略微）时，没有极限环，系统进入一种“阵发性”混沌的状态，
+              系统会在看似有稳定周期解一段时间后突然陷入短暂的混乱状态又恢复周期解（看似在一个极限环的附近），并不断重复。
+            </p>
+            <p>
+              以下是对 $ \rho = 166.3 $ 的仿真：
+              <button id="preset-rho16607-single" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+            </p>
+            <p>
+              书中称 $145 \lt \rho \lt 166$ 左右这个区间为“倍周期”区间。
+            </p>
+            <p>
+              当 $ \rho = 166.07 $ 时，系统产生一个单独的稳定对称的极限环。
+            </p>
+            <p>
+              以下是对 $ \rho = 166.0 $、 $ \rho = 160.0 $ 和 $ \rho = 155.0 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到一个极限环上。
+              <button id="preset-rho16600-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 166.0</button>
+              <button id="preset-rho16000-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 160.0</button>
+              <button id="preset-rho15500-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 155.0</button>
+            </p>
+            <p>
+              当 $ \rho = 154.4 $ 时，这个单独的稳定对称极限环分裂成两个稳定但不对称的极限环。
+            </p>
+            <p>
+              以下是对 $ \rho = 154.0 $ 和 $ \rho = 148.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到两个极限环上。
+              <button id="preset-rho15400-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 154.0</button>
+              <button id="preset-rho14850-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 148.5</button>
+            </p>
+            <p>
+              当 $ \rho = 148.2 $ 时，这两个单独的极限环各自又分裂成两个极限环，形成四个极限环。并且每个极限环周期翻倍。
+            </p>
+            <p>
+              当 $ 145 \lt \rho \lt 148.2 $ 时，随着 $\rho$ 的减小，出现了无限次这样的的周期翻倍的分岔，所以结合来看，
+              这应该也是 $145 \lt \rho \lt 166$ 这个区间被称为“倍周期”区间的原因。
+            </p>
+            <p>
+              以下是对 $ \rho = 148.0 $ 和 $ \rho = 147.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到四个以上的极限环上。
+              <button id="preset-rho14800-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 148.0</button>
+              <button id="preset-rho14750-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 147.5</button>
+            </p>
+            <p>
+              当 $ \rho = 145 时，系统经过无限次上述“倍周期”分岔后，分岔得到的系列极限环最终组合成一个奇怪吸引子，系统呈混沌状态。
+            </p>
+            <p>
+              以下是对 $ \rho = 145.0 $ 的仿真。
+              <button id="preset-rho14500-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 145.0</button>
+            </p>
+          </div>
+          <div class="simulation-block">
+            <p>
+              接下来，参考习题 9.5.2 简单看看 ，当 $\rho = 212$ 时，系统所呈现的性质。
+            </p>
+            <p>
+              以下是对 $ \rho = 212.0 $ 的仿真。
+              <button id="preset-rho21200-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 212.0</button>
+            </p>
+            <p>
+              可以看到所有解最终都在一个区域内进行类似周期的行为，这在书中称为噪声周期性。
+            </p>
+          </div>
+
+          <h4><span class="title-span">2.7.3</span> $\rho \gt 313 $ </h4>
+          <p>
+            当 $\rho$ 充分大，特别的，当 $\rho \gt 313 $ 时，动力学系统再次变的简单。
+          </p>
+          <div class="simulation-block">
+            <p>
+              以下是参考例题 9.5.2 对 $ \rho = 350.0 $ 的仿真。
+              <button id="preset-rho35000-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 350.0</button>
+            </p>
+          </div>
+          <p>
+            数值实验表明，此时系统有一个全局吸引的极限环。书中提到，Robbins 使用微扰法描述 $\rho$ 较大时的极限环，
+            并且它计算的开头几步即下面的 9.5.5:
+          </p>
+          
+        </div>
+      </div>
+    </div>
+    
     <div id="params-panel">
       <ul>
         <li><kbd>l</kbd>
           <label>toggle this menu</label>
         </li>
-        <li>
-          <h3>Params</h3>
+      </ul>
+      <h1>Params</h1>
+      <div class="scrollable" id="params-contents">
+        <ul>
+          <li>
+            <label>$ x^* = y^* = \pm$ <span class="label" id="fix-p-xy-label"></span></label><br/>
+            <label>$ z^* = $ <span class="label" id="fix-p-z-label"></span></label>
+          </li>
           <button id="reset-params" onclick="setValueTriggerInput('option', this.id);">Reset Params</button>
           <li>
-            <br/>
             <input id="sigma" type="range" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma-input', this.value)"/>
             <input class="input-box" id="sigma-input" type="number" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma', this.value)"/>
-            <label>&sigma; = <span class="label" id="sigma-label"></span></label>
+            <label>$ \sigma = $<span class="label" id="sigma-label"></span></label>
           </li>
           <li>
             <input id="beta" type="range" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta-input', this.value)"/>
             <input class="input-box" id="beta-input" type="number" min="0" max="20" step="0.001" oninput="setValueTriggerInput('beta', this.value)"/>
-            <label>&beta; = <span class="label" id="beta-label"></span></label>
+            <label>$ \beta = $ <span class="label" id="beta-label"></span></label>
           </li>
           <li>
-            <input id="rho" type="range" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho-input', this.value)"/>
-            <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.05" oninput="setValueTriggerInput('rho', this.value)"/>
-            <label>&rho; = <span class="label" id="rho-label"></span></label>
+            <input id="rho" type="range" min="0" max="350" step="0.01" oninput="setValueTriggerInput('rho-input', this.value)"/>
+            <input class="input-box" id="rho-input" type="number" min="0" max="350" step="0.01" oninput="setValueTriggerInput('rho', this.value)"/>
+            <label>$ \rho = $ <span class="label" id="rho-label"></span></label>
           </li>
           <li>
-            <span>&rho; disturbance amplitude: A=</span>
+            <span>$ \rho $ disturbance amplitude: $ A = $</span>
             <input class="input-box" id="disturbance-amplitude-input" type="number" min="0" max="2" step="0.1" value="0" onchange="setValueTriggerInput('option', this.id)"/>
           </li>
           <li>
-            <span>&rho; aisturbance frequency: &omega;=</span>
+            <span>$ \rho $ aisturbance frequency: $ \omega = $</span>
             <input class="input-box" id="disturbance-frequency-input" type="number" min="0.01" max="10" step="0.01" value="0.1" onchange="setValueTriggerInput('option', this.id)"/>
           </li>
-        </li>
-      </ul>
+        </ul>
+      </div>
     </div>
-
+    
     <canvas id="lorenz"></canvas>
   </body>
-</html>
+  </html>
+  

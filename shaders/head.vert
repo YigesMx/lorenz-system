@@ -14,7 +14,7 @@ varying vec3 vcolor;
 void main() {
     vec3 point = project_to_plane(point, proj_mode, 0.0, 0.0);
 
-    gl_PointSize = 160.0 * scale;
+    gl_PointSize = 3.5 ;
     float scale = scale * (projection == 0 ? 1.0 : ortho_scale);
 
     vcolor = color;

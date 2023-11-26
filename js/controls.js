@@ -27,7 +27,6 @@ function Controls(lorenz) {
         lorenz.params.rho = value;
         rho(value);
     };
-
     this.set_length = this.bind('#length', '#length-label', function(value) {
         var length = Math.pow(2, parseFloat(value));
         lorenz.length = length;
@@ -165,7 +164,7 @@ Controls.prototype.delta = function(scale) {
 
 Controls.prototype.add = function(s) {
     if(s !== undefined){
-        console.log(s);
+        // console.log(s);
         this.lorenz.add(s);
     }else{
         this.lorenz.add(lorenz.generate());
@@ -219,7 +218,17 @@ Controls.prototype.bind = function(input_selector, label_selector, f) {
 //Display
 
 Controls.prototype.toggle_projection = function() {
-    this.lorenz.display.projection = !this.lorenz.display.projection;
+    if(this.lorenz.display.projection === 0){
+        this.lorenz.display.projection = 1;
+
+        var label = document.querySelector('#projection-label');
+        label.textContent = 'Orthographic';
+    }else{
+        this.lorenz.display.projection = 0;
+
+        var label = document.querySelector('#projection-label');
+        label.textContent = 'Perspective';
+    }
 };
 
 Controls.prototype.view_from_x = function() {
