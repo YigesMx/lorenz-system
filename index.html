@@ -189,13 +189,18 @@
         </p>
         <p>
           笔者也尝试过使用 Mathematica 或其他数值/符号计算软件对 Lorenz 方程进行分析，但这些软件本身大部分局限于 CPU 计算，
-          在仿真的实时性、交互性上较差，若要使用 GPU 计算，又需要使用 CUDA 或 OpenGL 接口从零开始编写，学习这些软件与这些的接口十分复杂。
-          于是笔者想到了结合正在学习的另一门计算机图形学的课程，使用 WebGL 调用 GPU 来进行并行的实时仿真和交互。
-          于是本笔记的主要内容就是基于这个想法与检索到的开源仓库，经过大量的修改完善完成的。
+          在仿真的实时性、交互性上较差，若要使用 GPU 计算，又需要通过 C/C++，使用 CUDA 或 OpenGL 接口从零开始编写，
+          重新学习这些数值或符号计算软件与这些图形接口的配合十分复杂。于是笔者想到了结合正在学习的另一门计算机图形学的课程，通过使用
+          GLSL 的 WebGL 调用 GPU 来进行并行的实时仿真和交互。本笔记的主要内容就是基于这个想法与检索到的开源仓库，经过大量的修改完善完成的。
         </p>
         <p>
-          详细来讲，对 lorenz 系统的模拟使用了固定步长的4阶 Runge-Kutta 方法，这个方法本身尽量保证了计算的精度，
-          此外还可以通过进一步调整步长来控制模拟精度。
+          特别的，本仿真过程对 lorenz 系统的模拟使用了固定步长的4阶 Runge-Kutta 方法，这个方法本身一定程度上保证了模拟的精度，此外还可以通过进一步调整步长来控制精度。
+          由于是数值模拟，不同方法和选取的精度都可能会对结果产生影响，所以在这个具体实现中选取的初值，不一定在其他软件或平台上有相同的行为，
+          甚至在调整精度（Step Size）后都会呈现不同的行为，这与数值计算的精度和系统本身的混沌性质都息息相关。
+        </p>
+        <p>
+          此外额外说明一下，未经说明的话（例如指明使用的初值），以下笔记中的模拟中的初值都是每次运行时随机生成的，这有助于观察系统的一般性质与行为。
+          （包括“生成一个点并对一个点加以扰动”，第一个点都是随机选取的，除非指定了被扰动点的位置，读者也可以在左侧面板中自行加入新的初值或清空所有解）
         </p>
         
         <h2><span class="title-span">1.</span> 混沌 与 Lorenz Equation</h2>
@@ -234,9 +239,9 @@
         <p>
           $$
           \begin{aligned}
-            \dot{x} &= \sigma \left(y-x\right) \\
-            \dot{y} &= \rho x - y - xz \\
-            \dot{z} &= xy - \beta z\\
+            {x}' &= \sigma \left(y-x\right) \\
+            {y}' &= \rho x - y - xz \\
+            {z}' &= xy - \beta z\\
           \end{aligned}
           $$
           式中，参数 $\sigma \gt 0,\rho \gt 0,\beta \gt 0$，$\sigma$ 为 Prandtl 数，$\rho$ 为 Rayleigh 数，$\beta$ 为几何参数（在对流问题中与卷的纵横比有关）。
@@ -515,7 +520,7 @@
               系统会在看似有稳定周期解一段时间后突然陷入短暂的混乱状态又恢复周期解（看似在一个极限环的附近），并不断重复。
             </p>
             <p>
-              以下是对 $ \rho = 166.3 $ 的仿真：（可以使用 x-t view 或 y-t view ，并改变 simulation speed 观察）
+              以下是对 $ \rho = 166.3 $ 的仿真：（可以使用 x-t view 或 y-t view，并且以下所有模拟建议适当增加 simulation speed 来快速查看系统的更长期的行为）
               <br/>
               <button id="preset-rho16607-single" onclick="presetParams(166.3,'single');">&rho; = 166.3</button>
             </p>
@@ -589,10 +594,108 @@
             </p>
           </div>
           <p>
-            数值实验表明，此时系统有一个全局吸引的极限环。书中提到，Robbins 使用微扰法描述 $\rho$ 较大时的极限环，
-            并且它计算的开头几步即下面的 9.5.5:
+            数值实验表明，此时系统有一个全局吸引的极限环。书中提到，Robbins 使用微扰法描述 $\rho$ 较大时的极限环，他的工作的一部分在习题 9.5.5 中给出：
           </p>
-
+          <div class="simulation-block">
+            <p>
+              习题 9.5.5: 考虑 $\rho \rightarrow \infty$ 时的 lorenz 系统，利用某种方式取极限，可以使方程中的所有耗散项消失 [Robbins, 1979, Sparrow, 1981]。
+            </p>
+            <p style="text-indent: -1em; padding-left: 1em;">
+              (a) 令 $ \epsilon = \rho^{-\frac{1}{2}} $，因此 $\rho \rightarrow \infty$ 时 $ \epsilon \rightarrow 0 $。
+              求一个包含 $\epsilon$ 的变量变换，使得当 $\epsilon \rightarrow 0$ 时，洛伦兹方程变为：
+              $$
+              \begin{aligned}
+                {X}' &= Y \\
+                {Y}' &= -XZ \\
+                {Z}' &= XY
+              \end{aligned}
+              $$
+            </p>
+            <p style="padding-left: 2em;">
+              解：由于洛伦兹方程中只有二阶项，我们考虑如下变量变换：
+              $$
+              \begin{aligned}
+                X&=x_0+x\left(a_0+a_1\epsilon + a_2 \left(\epsilon \right)^2 \right) \\ 
+                Y&=y_0+y\left(b_0+b_1\epsilon + b_2 \left(\epsilon \right)^2 \right) \\ 
+                Z&=z_0+z\left(c_0+c_1\epsilon + c_2 \left(\epsilon \right)^2 \right)
+              \end{aligned}
+              $$
+  
+              依照题意，将变量变换后代入洛仑兹方程中后我们需满足当 $\epsilon \rightarrow 0$ 时，方程有如下形式：
+              $$
+              \begin{aligned}
+                {X}' &= Y \\
+                {Y}' &= -XZ \\
+                {Z}' &= XY \\
+              \end{aligned}
+              $$
+  
+              于是我们解得
+              $$
+              \begin{aligned}
+                X &= \epsilon x \\
+                Y &= \epsilon^2 \sigma y \\
+                Z &= \sigma \left( \epsilon^2 z-1\right) \\
+                \tau &= \frac{t}{\epsilon} 
+              \end{aligned}
+              $$
+            </p>
+            <p style="text-indent: -1em; padding-left: 1em;">
+              (b) 求新系统的两个守恒量（即运动守恒量）
+            </p>
+            <p style="padding-left: 2em;">
+              解：
+              $$ 
+              \begin{aligned}
+                { \left( Y^2+Z^2 \right) }'
+                &= 2Y{Y}'+2Z{Z}'\\
+                &= 2Y\left(-XZ\right)+2Z\left(XY\right)\\
+                &= -2XYZ+2XYZ=0 \\ 
+                { \left( X^2-2Z \right) }'
+                &= 2X{X}'+2{Z}'\\
+                &= 2XY-2XYY\\
+                &= 0
+              \end{aligned}
+              $$
+            </p>
+            <p style="text-indent: -1em; padding-left: 1em;">
+              (c) 证明新系统是体积不变的。（即根据系统的时间演化，任意一团“相流”的体积是不变的，尽管其形状会发生戏剧性的变化）
+            </p>
+            <p style="padding-left: 2em;">
+              解：新系统写为向量场形式：
+              $$
+              \vec{F} \left(X,Y,Z\right) = \begin{bmatrix} Y \\ -XZ \\ XY \end{bmatrix} \\
+              $$
+              
+              我们知道向量场 $\vec{F}$ 的散度:
+              $$
+              \begin{aligned}
+                \nabla \cdot \vec{F} &= \frac{\partial F_X}{\partial X} + \frac{\partial F_Y}{\partial Y} + \frac{\partial F_Z}{\partial Z} \\
+                &= 0
+              \end{aligned}
+              $$
+              
+              所以
+              $$
+              \begin{aligned}
+                \dot{V} &= \int_V \nabla \cdot \vec{F} \mathrm{d}x \\
+                &= \int_V 0 \mathrm{d}x = 0
+              \end{aligned}
+              $$ 由此看出系统体积不变。
+            </p>
+            <p style="text-indent: -1em; padding-left: 1em;">
+              (d) 从物理的角度解释为什么当 $\rho$ 达到一定阈值时，或许能预见 lorenz 系统会出现一些保守特征。
+            </p>
+            <p style="padding-left: 2em;">
+              解：参数 $\rho$ 表示对流的强度，当 $\rho$ 达到一定阈值时，系统耗散接近于0，系统可能表现出保守特征。
+            </p>
+            <p style="text-indent: -1em; padding-left: 1em;">
+              (e) 利用数值方法求解新系统。它有什么长期行为？是否与 $\rho$ 足够大时的 lorenz 系统的行为一致？
+            </p>
+            <p style="padding-left: 2em;">
+              解：由此可见 $\rho$ 较大的洛伦兹方程与9.5.5(a)的系统都有一个稳定的极限环，行为是一致的。
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -628,7 +731,7 @@
             <input class="input-box" id="disturbance-amplitude-input" type="number" min="0" max="2" step="0.1" value="0" onchange="setValueTriggerInput('option', this.id)"/>
           </li>
           <li>
-            <span>$ \rho $ aisturbance frequency: $ \omega = $</span>
+            <span>$ \rho $ disturbance frequency: $ \omega = $</span>
             <input class="input-box" id="disturbance-frequency-input" type="number" min="0.01" max="10" step="0.01" value="0.1" onchange="setValueTriggerInput('option', this.id)"/>
           </li>
           <li>

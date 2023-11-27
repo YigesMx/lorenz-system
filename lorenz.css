@@ -201,3 +201,11 @@ details {
 #chaos-def li{
     list-style-type: disc;  /* 圆点 */
 }
+
+#first-line {
+    flex: 0 0 auto;  /* 这使得 #first-line 不会被压缩或扩展 */
+}
+
+#other-lines {
+    flex: 1 1 auto;  /* 这使得 #other-lines 会占据剩余的空间，并且可以被压缩和扩展 */
+}
