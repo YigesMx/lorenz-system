@@ -93,12 +93,16 @@
             <label>tail = <span class="label" id="length-label"></span></label>
           </li>
           <li>
+            <span>step size (dt, simulation precision):</span>
+            <input class="input-box" id="step-size-input" type="number" min="0.0005" max="0.005" step="0.0001" value="0.002" oninput="setValueTriggerInput('option', this.id)"/>
+          </li>
+          <li>
             <span>steps per frame (simulation speed):</span>
-            <input class="input-box" id="steps-per-frame-input" type="number" min="1" max="20" step="1" value="3" oninput="setValueTriggerInput('option', this.id)"/>
+            <input class="input-box" id="steps-per-frame-input" type="number" min="1" max="50" step="1" value="3" oninput="setValueTriggerInput('option', this.id)"/>
           </li>
           <li>
             <span>ticker speed (time axis scale):</span>
-            <input class="input-box" id="ticker-speed-input" type="number" min="3" max="20" step="1" value="10" oninput="setValueTriggerInput('option', this.id)"/>
+            <input class="input-box" id="ticker-speed-input" type="number" min="1" max="50" step="1" value="10" oninput="setValueTriggerInput('option', this.id)"/>
           </li>
         </li>
         
@@ -155,11 +159,28 @@
         </li>
       </ul>
       <h1>Notes & Presets</h1>
-      <p>
-        为了方便地观察下方的 Presets，除了自行使用左侧面板的视角控制器外，这里也提供以下按钮快速重置两种视角：
-        <button id="preset-normal-view" onclick="setValueTriggerInput('option', this.id);">3D view</button>
-        <button id="preset-xt-view" onclick="setValueTriggerInput('option', this.id);">x-t view</button>
-      </p>
+
+      <details>
+        <summary>
+          <button id="preset-3d-view" onclick="setValueTriggerInput('option', this.id);">3D view</button>
+          <button id="preset-xt-view" onclick="setValueTriggerInput('option', this.id);">x-t view</button>
+          <button id="preset-yt-view" onclick="setValueTriggerInput('option', this.id);">y-t view</button>
+          (点击左侧三角形查看说明)
+        </summary>
+        <p>
+          为了方便地观察下方的 Presets，除了自行使用左侧面板的视角控制器外，这里也提供以上按钮快速重置常用视角。
+        </p>
+        <p>
+          同时，为了保证时间轴的一致性，使用 x-t view 和 y-t view 时，由于点击它们时会立即重置并启动 ticker-timer，
+          所以请先按空格键暂停模拟，提前设置好 tail 长度（对于需要使用时间轴的可以尽量设置长一些），
+          再点击 x-t view 和 y-t view 按钮，最后再清空、加入解，并继续模拟。
+        </p>
+        <p>
+          尽管支持实时调整以上参数，不会出现程序上的错误，
+          但是在生成轨迹的过程中改变生成轨迹的参数，不能保证时间轴上行为的视觉一致性，如果为了看到严谨的结果，请按上述步骤执行。
+        </p>
+      </details>
+
       <div class="scrollable" id="presets-contents">
         <h2><span class="title-span">0.</span> 前言</h2>
         <p>
@@ -172,13 +193,17 @@
           于是笔者想到了结合正在学习的另一门计算机图形学的课程，使用 WebGL 调用 GPU 来进行并行的实时仿真和交互。
           于是本笔记的主要内容就是基于这个想法与检索到的开源仓库，经过大量的修改完善完成的。
         </p>
+        <p>
+          详细来讲，对 lorenz 系统的模拟使用了固定步长的4阶 Runge-Kutta 方法，这个方法本身尽量保证了计算的精度，
+          此外还可以通过进一步调整步长来控制模拟精度。
+        </p>
         
         <h2><span class="title-span">1.</span> 混沌 与 Lorenz Equation</h2>
 
-        <h3><span class="title-span">1.1</span> 混沌的定义</h3>
+        <h3><span class="title-span">1.1</span> 混沌的一种定义</h3>
         <p>
           <ul id="chaos-def">
-            <li>确定非周期性</li>
+            <li>确定性非周期性</li>
             <li>对初值的敏感依赖性</li>
             <li>长期行为的不可预测性</li>
             <li>紧致性：一个紧致系统的每一条轨道都有极限集</li>
@@ -203,7 +228,7 @@
             其中，$\vec v$ 为流速，$\rho$ 为流体密度，$T$ 为流体温度。$T_0$ 为上限温度，
             $p$ 为压强，$\vec g$ 为重力加速度，$\nu$ 为运动粘度系数，$\chi$ 为热扩散系数，$\gamma$ 为热膨胀系数。
             简化后获得上述 Lorenz方程。
-            <h4>from <a href="https://zh.wikipedia.org/wiki/%E6%B4%9B%E4%BC%A6%E8%8C%A8%E5%90%B8%E5%BC%95%E5%AD%90">wikipedia</a></h4>
+            <h5>from <a href="https://zh.wikipedia.org/wiki/%E6%B4%9B%E4%BC%A6%E8%8C%A8%E5%90%B8%E5%BC%95%E5%AD%90">wikipedia</a></h5>
           </p>
         </details>
         <p>
@@ -237,7 +262,8 @@
           <div class="simulation-block">
             <p>
               例如，以下是对 $\rho = 0.5$ 的仿真结果：
-              <button id="preset-rho05-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              <br/>
+              <button id="preset-rho05-scatter" onclick="presetParams(0.5,'scatter');">&rho; = 0.5</button>
             </p>
           </div>
           
@@ -261,7 +287,8 @@
           <div class="simulation-block">
             <p>
               例如，以下是对 $\rho = 10$ 的仿真结果，也可以自行调整 $\rho$ 的值观察此区间内解的变化：
-              <button id="preset-rho10-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              <br/>
+              <button id="preset-rho10-scatter" onclick="presetParams(10,'scatter');">&rho; = 10</button>
             </p>
           </div>
 
@@ -294,17 +321,35 @@
           <div class="simulation-block">
             <p>
               例如，以下是对 $\rho = 21$ 的全局仿真结果（书中例9.5.1）：
-              <button id="preset-rho21-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              <br/>
+              <button id="preset-rho21-scatter" onclick="presetParams(21,'scatter');">&rho; = 21</button>
             </p>
             <p>
               当然不是所有轨道都会出现暂态混沌，参考习题 9.5.6，我们找出 $\rho = 21$ 时，
               出现暂态混沌的三个初始条件，和不会出现暂态混沌的三个初始条件，分别作模拟：
-              <button id="preset-rho21-1" onclick="setValueTriggerInput('option', this.id);">暂态混沌</button>
-              <button id="preset-rho21-2" onclick="setValueTriggerInput('option', this.id);">非暂态混沌</button>
             </p>
             <p>
-              如下给出预测初始条件能否导致暂态混沌的经验规则：如果离 $C^+$ 和 $C^-$ 的距离接近，
-              那么大概率不会发生瞬态混沌，若距离远则很容易发生瞬态混沌。
+              <button id="preset-rho21-1" onclick="presetParams(21,'preset',[[1,1,20],[30,30,20],[30,30,10]]);">暂态混沌</button>
+              <br/>选取了三个点：
+              <br/>(1, 1, 20): 离 z 轴比较近，暂态混沌时间最久；
+              <br/>(30, 30, 20): 离 z 轴比较远，暂态混沌时间较短；
+              <br/>(30, 30, 10): 也离 z 轴比较远，暂态混沌时间很短。
+            </p>
+            <p>
+              <button id="preset-rho21-2" onclick="presetParams(21,'preset',[[7,7,21],[5,5,20],[20,20,20]]);">非暂态混沌</button>
+              <br/>选取了三个点：
+              <br/>(7, 7, 21): 离 $C^+$ 非常近；
+              <br/>(5, 5, 20): 也离 $C^+$ 非常近；
+              <br/>(20, 20, 20): 虽然离 $C^+$ 远，但任然没有瞬态混沌，可见初值的敏感依赖性是非常严重的。
+            </p>
+            <p>
+              如下给出预测初始条件能否导致暂态混沌的经验规则：
+              <br/>- 如果离 $C^+$ 和 $C^-$ 的距离接近（比如在两个极限环内），那么大概率不会发生瞬态混沌。
+              <br/>- 若距离 $C^+$ 和 $C^-$ 的距离远则有可能发生瞬态混沌，也可能不会发生
+              （此时也对初值有比较强的敏感依赖性，这决定了一切都有可能，例如对
+              <button id="preset-rho21-2" onclick="presetParams(21,'chaos-preset',[[30,30,100]]);">(30, 30, 100)</button>
+              的初值加以扰动，就会有解分别收敛到 $C^+$ 和 $C^-$ 且暂态混沌时间长短差异很大，可以通过 x-t 或 y-t 对比）
+              <br/>- 如果离 z 轴很近，则非常容易发生瞬态混沌（如(0.1, 0.1, 20)等）。
             </p>
           </div>
 
@@ -339,8 +384,12 @@
           </p>
           <div class="simulation-block">
             <p>
-              下面是对 $\rho = 24.3$ 的局部仿真结果: 
-              <button id="preset-rho243-local" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              下面是对 $\rho = 24.3$ 的局部仿真结果: （可以通过更改左侧“steps per frame”参数加速模拟，更直观看到效果）
+              <br/>
+              <button id="preset-rho243-local" onclick="
+                presetParams(24.3,'preset',[[5.5,5.5,23.3],[5.6,5.6,23.3],[5.7,5.7,23.3],[5.8,5.8,23.3],[5.9,5.9,23.3]]);">
+                &rho; = 24.3
+              </button>
             </p>
             <p>
               在这个参数下，两个不动点坐标近似为：
@@ -360,13 +409,14 @@
                 s_5 &= (5.9, 5.9, 23.30)
               \end{aligned}
               $$
-              可以看到，$s_1$ 和 $s_2$ 缓慢离开极限环向外，被奇怪吸引子吸引，最终进入混沌态，在奇怪吸引子附近呈现复杂无规律的运动。
+              可以看到，$s_1$ 和 $s_2$ 缓慢离开极限环向外，被奇怪吸引子吸引，最终进入混沌的状态，在奇怪吸引子附近呈现复杂无规律的运动。
               并且注意这不是暂态混沌，是无限长时间在奇怪吸引子附近游荡，不会被 $C^+$ 或 $C^-$ 吸引。
               而 $s_3$ 很靠近极限环，但其还是缓慢离开极限环向内，最终和 $s_4$ 以及 $s_5$ 都被 $C^+$ 吸引并收敛。
             </p>
             <p>
               下面是对 $\rho = 24.3$ 的全局仿真结果: 
-              <button id="preset-rho243-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              <br/>
+              <button id="preset-rho243-scatter" onclick="presetParams(24.3,'scatter');">&rho; = 24.3</button>
             </p>
             <p>
               可以注意到一些解逐步向内离开极限环，最终都被 $C^+$ 或 $C^-$ 吸引。
@@ -378,6 +428,8 @@
           <p>
             参考习题 9.5.4：假设我们稍微增加或减少 $\rho$ 的值，特别的令 $\rho = 24.4 + \sin\left( \omega t \right)$，
             其中 $\omega$ 是一个很小的常数，比吸引子的通常轨道的近似角频率要小。我们可以发现一个介于平衡点和混沌态之间的令人吃惊的滞后。
+          </p>
+          <p>
             书中 9.5 节对此也做了如下描述：这意味着一个足够大的扰动能够使一个稳定运动的水车变成一个永久的混沌水车。
           </p>
           <p>
@@ -386,10 +438,17 @@
           </p>
           <div class="simulation-block">
             <p>
-              例如，以下是对 $\rho = 24.4 + \sin\left( \omega t \right)$ 的全局随机仿真结果：
-              <button id="preset-rho2404-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              例如，以下是对 $\rho = 24.4 + 1.5 \cdot\sin\left( \omega t \right)$ 的全局随机仿真结果：
+              <br/>
+              <button id="preset-rho2404-scatter-disturb" onclick="presetParams(24.4,'scatter-disturb');controls.enable_ticker_timer();">&rho; = 24.4 + 1.5sin(wt)</button>
             </p>
           </div>
+          <p>
+            从模拟结果来看，可以发现这个“滞后”是指：
+            虽然某些时刻系统处于有稳定不动点的状态，但在后面某个时刻由于对于 $\rho$ 的扰动使得稳定不动点变为不稳定的，
+            导致一些解在不动点周围游荡，在被吸引和排斥之间不断变化。
+            甚至如果扰动较大，这些解会被奇怪吸引子吸引从而使得解进入混沌无序的状态。
+          </p>
 
           <h3><span class="title-span">2.6</span> $\rho = \rho_H = 24.74 $ </h3>
           <p>
@@ -419,15 +478,17 @@
           <div class="simulation-block">
             <p>
               例如，以下是对 $\rho = 28$ 的全局随机仿真结果：
-              <button id="preset-rho28-scatter" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              <br/>
+              <button id="preset-rho28-scatter" onclick="presetParams(28,'scatter');">&rho; = 28</button>
             </p>
             <p>
               这也是书中例 9.3 讨论的部分，这部分除了展示这种混沌特性外，还证明了相邻轨道的指数速度分离，并给出了混沌和奇怪吸引子的一种定义。
               其中的一些内容也在前面提及奇怪吸引子时有所涉及。
             </p>
             <p>
-              我们也可以通过选择一系列初始非常接近的点（或者说对一个初值进行微小扰动），来直观感受“对初值的敏感依赖性”：
-              <button id="preset-rho28-chaos" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              我们也可以通过选择一系列初始非常接近的点（或者说对一个初值进行微小扰动），来直观感受“对初值的敏感依赖性”以及混沌的美：
+              <br/>
+              <button id="preset-rho28-chaos" onclick="presetParams(28,'chaos');">&rho; = 28</button>
             </p>
           </div>
 
@@ -454,47 +515,52 @@
               系统会在看似有稳定周期解一段时间后突然陷入短暂的混乱状态又恢复周期解（看似在一个极限环的附近），并不断重复。
             </p>
             <p>
-              以下是对 $ \rho = 166.3 $ 的仿真：
-              <button id="preset-rho16607-single" onclick="setValueTriggerInput('option', this.id);">Simulation</button>
+              以下是对 $ \rho = 166.3 $ 的仿真：（可以使用 x-t view 或 y-t view ，并改变 simulation speed 观察）
+              <br/>
+              <button id="preset-rho16607-single" onclick="presetParams(166.3,'single');">&rho; = 166.3</button>
             </p>
             <p>
-              书中称 $145 \lt \rho \lt 166$ 左右这个区间为“倍周期”区间。
+              书中称 $145 \lt \rho \lt 166$ 左右这个区间为一个“倍周期”区间。
             </p>
             <p>
               当 $ \rho = 166.07 $ 时，系统产生一个单独的稳定对称的极限环。
             </p>
             <p>
-              以下是对 $ \rho = 166.0 $、 $ \rho = 160.0 $ 和 $ \rho = 155.0 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到一个极限环上。
-              <button id="preset-rho16600-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 166.0</button>
-              <button id="preset-rho16000-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 160.0</button>
-              <button id="preset-rho15500-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 155.0</button>
+              以下是对 $ \rho = 166.0 $、 $ \rho = 160.0 $ 和 $ \rho = 155.0 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到一个极限环上：
+              <br/>
+              <button id="preset-rho16600-scatter" onclick="presetParams(166,'scatter');">&rho; = 166.0</button>
+              <button id="preset-rho16000-scatter" onclick="presetParams(160,'scatter');">&rho; = 160.0</button>
+              <button id="preset-rho15500-scatter" onclick="presetParams(155,'scatter');">&rho; = 155.0</button>
             </p>
             <p>
               当 $ \rho = 154.4 $ 时，这个单独的稳定对称极限环分裂成两个稳定但不对称的极限环。
             </p>
             <p>
-              以下是对 $ \rho = 154.0 $ 和 $ \rho = 148.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到两个极限环上。
-              <button id="preset-rho15400-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 154.0</button>
-              <button id="preset-rho14850-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 148.5</button>
+              以下是对 $ \rho = 154.0 $ 和 $ \rho = 148.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到两个极限环上：
+              <br/>
+              <button id="preset-rho15400-scatter" onclick="presetParams(154,'scatter');">&rho; = 154.0</button>
+              <button id="preset-rho14850-scatter" onclick="presetParams(148.5,'scatter');">&rho; = 148.5</button>
             </p>
             <p>
               当 $ \rho = 148.2 $ 时，这两个单独的极限环各自又分裂成两个极限环，形成四个极限环。并且每个极限环周期翻倍。
             </p>
             <p>
               当 $ 145 \lt \rho \lt 148.2 $ 时，随着 $\rho$ 的减小，出现了无限次这样的的周期翻倍的分岔，所以结合来看，
-              这应该也是 $145 \lt \rho \lt 166$ 这个区间被称为“倍周期”区间的原因。
+              这应该也是 $145 \lt \rho \lt 166$ 等区间被称为“倍周期”区间的原因。
             </p>
             <p>
-              以下是对 $ \rho = 148.0 $ 和 $ \rho = 147.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到四个以上的极限环上。
-              <button id="preset-rho14800-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 148.0</button>
-              <button id="preset-rho14750-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 147.5</button>
+              以下是对 $ \rho = 148.0 $ 和 $ \rho = 147.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到四个以上的极限环上：
+              <br/>
+              <button id="preset-rho14800-scatter" onclick="presetParams(148,'scatter');">&rho; = 148.0</button>
+              <button id="preset-rho14750-scatter" onclick="presetParams(147.5,'scatter');">&rho; = 147.5</button>
             </p>
             <p>
-              当 $ \rho = 145 时，系统经过无限次上述“倍周期”分岔后，分岔得到的系列极限环最终组合成一个奇怪吸引子，系统呈混沌状态。
+              当 $ \rho = 145 $ 时，系统经过无限次上述“倍周期”分岔后，分岔得到的系列极限环最终组合成一个奇怪吸引子，系统呈混沌状态。
             </p>
             <p>
-              以下是对 $ \rho = 145.0 $ 的仿真。
-              <button id="preset-rho14500-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 145.0</button>
+              以下是对 $ \rho = 145.0 $ 的仿真：
+              <br/>
+              <button id="preset-rho14500-scatter" onclick="presetParams(145,'scatter');">&rho; = 145.0</button>
             </p>
           </div>
           <div class="simulation-block">
@@ -502,8 +568,9 @@
               接下来，参考习题 9.5.2 简单看看 ，当 $\rho = 212$ 时，系统所呈现的性质。
             </p>
             <p>
-              以下是对 $ \rho = 212.0 $ 的仿真。
-              <button id="preset-rho21200-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 212.0</button>
+              以下是对 $ \rho = 212.0 $ 的仿真：
+              <br/>
+              <button id="preset-rho21200-scatter" onclick="presetParams(212,'scatter');">&rho; = 212.0</button>
             </p>
             <p>
               可以看到所有解最终都在一个区域内进行类似周期的行为，这在书中称为噪声周期性。
@@ -516,8 +583,9 @@
           </p>
           <div class="simulation-block">
             <p>
-              以下是参考例题 9.5.2 对 $ \rho = 350.0 $ 的仿真。
-              <button id="preset-rho35000-scatter" onclick="setValueTriggerInput('option', this.id);">&rho; = 350.0</button>
+              以下是参考例题 9.5.2 对 $ \rho = 350.0 $ 的仿真：
+              <br/>
+              <button id="preset-rho35000-scatter" onclick="presetParams(350,'scatter');">&rho; = 350.0</button>
             </p>
           </div>
           <p>
@@ -538,12 +606,9 @@
       <h1>Params</h1>
       <div class="scrollable" id="params-contents">
         <ul>
-          <li>
-            <label>$ x^* = y^* = \pm$ <span class="label" id="fix-p-xy-label"></span></label><br/>
-            <label>$ z^* = $ <span class="label" id="fix-p-z-label"></span></label>
-          </li>
           <button id="reset-params" onclick="setValueTriggerInput('option', this.id);">Reset Params</button>
           <li>
+            <br/>
             <input id="sigma" type="range" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma-input', this.value)"/>
             <input class="input-box" id="sigma-input" type="number" min="-1" max="20" step="0.001" oninput="setValueTriggerInput('sigma', this.value)"/>
             <label>$ \sigma = $<span class="label" id="sigma-label"></span></label>
@@ -565,6 +630,11 @@
           <li>
             <span>$ \rho $ aisturbance frequency: $ \omega = $</span>
             <input class="input-box" id="disturbance-frequency-input" type="number" min="0.01" max="10" step="0.01" value="0.1" onchange="setValueTriggerInput('option', this.id)"/>
+          </li>
+          <li>
+            <label> $ C^\pm $ :</label>
+            <label> $ x^* = y^* = \pm$ <span class="label" id="fix-p-xy-label"></span></label>
+            <label> $ z^* = $ <span class="label" id="fix-p-z-label"></span></label>
           </li>
         </ul>
       </div>

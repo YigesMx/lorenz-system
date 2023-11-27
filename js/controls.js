@@ -219,16 +219,24 @@ Controls.prototype.bind = function(input_selector, label_selector, f) {
 
 Controls.prototype.toggle_projection = function() {
     if(this.lorenz.display.projection === 0){
-        this.lorenz.display.projection = 1;
-
-        var label = document.querySelector('#projection-label');
-        label.textContent = 'Orthographic';
+        controls.ortho();
     }else{
-        this.lorenz.display.projection = 0;
-
-        var label = document.querySelector('#projection-label');
-        label.textContent = 'Perspective';
+        controls.persp();
     }
+};
+
+Controls.prototype.persp = function() {
+    this.lorenz.display.projection = 0;
+
+    var label = document.querySelector('#projection-label');
+    label.textContent = 'Perspective';
+};
+
+Controls.prototype.ortho = function() {
+    this.lorenz.display.projection = 1;
+
+    var label = document.querySelector('#projection-label');
+    label.textContent = 'Orthographic';
 };
 
 Controls.prototype.view_from_x = function() {
@@ -241,20 +249,29 @@ Controls.prototype.view_from_y = function() {
 
 Controls.prototype.view_from_z = (function() {
     var direction = 0;
-    return function() {
-        if(direction === 0){
-            this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1/2)];
-            direction = 1;
+    return function(mode) {
+        if(mode !== undefined){
+            if(mode === 1){
+                this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1/2)];
+                direction = 1;
+            }else if(mode === 0){
+                this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1)];
+                direction = 0;
+            }
         }else{
-            this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1)];
-            direction = 0;
+            if(direction === 0){
+                this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1/2)];
+                direction = 1;
+            }else{
+                this.lorenz.display.rotation = [0, Math.PI, -Math.PI*(1)];
+                direction = 0;
+            }
         }
     }
 })();
 
 Controls.prototype.proj_none = function() {
     this.lorenz.display.proj_mode = 0;
-    this.disable_ticker_timer();
 };
 
 Controls.prototype.proj_on_xy = function() {

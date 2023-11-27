@@ -59,7 +59,8 @@ window.addEventListener('load', function() {
         return function() {
             var fps = lorenz.fps;
             var count = lorenz.solutions.length.toLocaleString();
-            stats.textContent = count + ' solutions @ ' + fps + ' FPS';
+            var paused = lorenz.params.paused === true ? '⏸':'▶';
+            stats.textContent = count + ' solutions @ ' + fps + ' FPS' + ' ' + paused;
         }
     })();
     update_timer = (function() {
@@ -73,6 +74,11 @@ window.addEventListener('load', function() {
         var fix_p_xy_label = document.querySelector('#fix-p-xy-label');
         var fix_p_z_label = document.querySelector('#fix-p-z-label');
          return function() {
+            if(lorenz.params.rho < 1){
+                fix_p_xy_label.textContent = 'NaN';
+                fix_p_z_label.textContent = 'NaN';
+                return;
+            }
             var xy = Math.sqrt(lorenz.params.beta * (lorenz.params.rho - 1));
             var z = lorenz.params.rho - 1;
             fix_p_xy_label.textContent = xy.toFixed(5);
@@ -188,6 +194,11 @@ window.addEventListener('load', function() {
 
             controls.toggle_rotation_damping();
 
+        }else if (option.value === 'step-size-input') {
+            
+            var step_size = parseFloat(document.querySelector('#'+option.value).value);
+            lorenz.params.step_size = step_size;
+
         }else if (option.value === 'steps-per-frame-input') {
             
             var steps_per_frame = parseInt(document.querySelector('#'+option.value).value);
@@ -198,7 +209,33 @@ window.addEventListener('load', function() {
             var ticker_speed = parseFloat(document.querySelector('#'+option.value).value)/10.0;
             lorenz.display.ticker_speed = ticker_speed;
 
-        }else if (option.value === 'preset-rho28-chaos') { // Presets
+        }else if (option.value === 'preset-3d-view') { // Presets
+
+            controls.reset_view();
+            controls.persp();
+            controls.proj_none();
+
+        }else if (option.value === 'preset-xt-view') {
+
+            controls.reset_view();
+            controls.ortho();
+            controls.proj_on_xz();
+            controls.view_from_z(1);
+
+            controls.disable_ticker_timer();
+            controls.enable_ticker_timer();
+
+        }else if (option.value === 'preset-yt-view') {
+
+            controls.reset_view();
+            controls.ortho();
+            controls.proj_on_yz();
+            controls.view_from_z(0);
+
+            controls.disable_ticker_timer();
+            controls.enable_ticker_timer();
+
+        }/*else if (option.value === 'preset-rho28-chaos') {
 
             lorenz.display.scale = 1 / 25;
             controls.reset_view();
@@ -224,11 +261,51 @@ window.addEventListener('load', function() {
             for (var i = 1; i <= 32; i++)
                 controls.add();
 
-        }
+        }*/
     });
 });
 
+function presetParams(rho, method, preset_samples){
+    lorenz.display.scale = 1 / rho;
+    controls.reset_view();
+    controls.persp();
+    controls.disable_ticker_timer();
 
+    controls.reset_params();
+    controls.set_rho(rho);
+    flush_param_inputs(lorenz);
+
+    controls.clear();
+    if(method === 'chaos'){
+        controls.add();
+        for (var i = 1; i <= 32-1; i++)
+            controls.clone();
+    }else if (method === 'chaos-preset') {
+        var len = preset_samples.length;
+        for (var i = 0; i < len; i++) {
+            controls.add(preset_samples[i]);
+            for (var i = 1; i <= 32-1; i++)
+                controls.clone();
+        }
+    }else if (method === 'scatter') {
+        for (var i = 1; i <= 32; i++)
+            controls.add();
+    }else if (method === 'scatter-disturb'){
+        lorenz.params.rho_disturb_A = 1.5;
+        lorenz.params.rho_disturb_w = 0.1;
+        flush_param_inputs(lorenz);
+
+        for (var i = 1; i <= 32; i++)
+            controls.add();
+    }else if (method === 'single') {
+        controls.add();
+    }else if (method === 'preset') {
+        var len = preset_samples.length;
+        for (var i = 0; i < len; i++) {
+            controls.add(preset_samples[i]);
+        }
+    }
+}
 
 var setValueTriggerInput = (function() {
     var gap = 1;

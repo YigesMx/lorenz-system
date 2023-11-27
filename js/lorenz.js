@@ -24,7 +24,7 @@ function Lorenz(canvas) {
     };
     this.display = {
         projection: 0,
-        scale: 1 / 25, 
+        scale: 1 / 28, 
         rotation: [Math.PI/2, Math.PI, -Math.PI*(3/4)],
         rotationd: [0, 0, 0],
         translation: [0, 0, 2.5],
