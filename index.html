@@ -693,7 +693,13 @@
               (e) 利用数值方法求解新系统。它有什么长期行为？是否与 $\rho$ 足够大时的 lorenz 系统的行为一致？
             </p>
             <p style="padding-left: 2em;">
-              解：由此可见 $\rho$ 较大的洛伦兹方程与9.5.5(a)的系统都有一个稳定的极限环，行为是一致的。
+              解：数值模拟：
+              <button id="new-sys-scatter" onclick="setValueTriggerInput('option', this.id)"> New System </button>
+              （可以使用任何 Presets 或使用 Params 面板的 Reset Params 切换回 Lorenz 方程）
+            </p>
+            <p>
+              由此可见 $\rho$ 较大的洛伦兹方程有一个极限环，
+              9.5.5(a) 中的系统保守。
             </p>
           </div>
         </div>

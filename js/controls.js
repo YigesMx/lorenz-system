@@ -290,7 +290,7 @@ Controls.prototype.reset_view = function() {
     var default_display = this.lorenz.get_default_display();
     this.lorenz.display.rotation = default_display.rotation;
     this.lorenz.display.translation = default_display.translation;
-}
+};
 
 Controls.prototype.reset_params = function() {
     var default_params = this.lorenz.get_default_params();
@@ -301,7 +301,7 @@ Controls.prototype.reset_params = function() {
     this.lorenz.params.rho_disturb_w = default_params.rho_disturb_w;
 
     flush_param_inputs(lorenz);
-}
+};
 
 Controls.prototype.toggle_axis = function() {
     this.lorenz.display.draw_axis = !this.lorenz.display.draw_axis;
@@ -312,7 +312,7 @@ Controls.prototype.rotate = function(w) {
     this.lorenz.display.rotationd[1] = 0;
     this.lorenz.display.rotationd[2] = w;
     this.lorenz.display.damping = false;
-}
+};
 
 Controls.prototype.enable_ticker_timer = function() {
     this.lorenz.display.timer = 0;
@@ -322,7 +322,7 @@ Controls.prototype.enable_ticker_timer = function() {
 Controls.prototype.disable_ticker_timer = function() {
     this.lorenz.display.timer = 0;
     this.lorenz.display.roll = 0;
-}
+};
 
 Controls.prototype.toggle_ticker_timer = function() {
     if(this.lorenz.display.roll == 0){
@@ -334,8 +334,18 @@ Controls.prototype.toggle_ticker_timer = function() {
 
 Controls.prototype.toggle_rotation_damping = function() {
     this.lorenz.display.damping = !this.lorenz.display.damping;
-}
+};
 
 Controls.prototype.toggle_heads = function() {
     this.lorenz.display.draw_heads = !this.lorenz.display.draw_heads;
-}
+};
+
+// Params
+
+Controls.prototype.use_lorenz = function() {
+    this.lorenz.params.use_lorenz = true;
+};
+
+Controls.prototype.use_new_sys = function() {
+    this.lorenz.params.use_lorenz = false;
+};

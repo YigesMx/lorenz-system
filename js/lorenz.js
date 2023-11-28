@@ -13,6 +13,7 @@ function Lorenz(canvas) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     this.params = {
+        use_lorenz: true,
         sigma: 10,
         beta: parseFloat((8 / 3).toFixed(6)),
         rho: 28 ,
@@ -229,10 +230,17 @@ Lorenz.color = function(i) {
  * @returns {undefined}
  */
 Lorenz.prototype.lorenz = function(s, dt, σ, β, ρ) { // 四阶龙格-库塔方法
-    var r = ρ + this.params.rho_disturb_A * Math.sin(this.params.rho_disturb_w * this.display.timer);
-    function dx(x, y, z) { return σ * (y - x); }
-    function dy(x, y, z) { return x * (r - z) - y; }
-    function dz(x, y, z) { return x * y - β * z; }
+
+    if(this.params.use_lorenz){
+        var r = ρ + this.params.rho_disturb_A * Math.sin(this.params.rho_disturb_w * this.display.timer);
+        function dx(x, y, z) { return σ * (y - x); }
+        function dy(x, y, z) { return x * (r - z) - y; }
+        function dz(x, y, z) { return x * y - β * z; }
+    }else{
+        function dx(x, y, z) { return y; }
+        function dy(x, y, z) { return - x * z; }
+        function dz(x, y, z) { return x * y; }
+    }
 
     var x = s[0];
     var y = s[1];

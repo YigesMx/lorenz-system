@@ -96,7 +96,8 @@ window.addEventListener('load', function() {
         // console.log(option.value);
 
         if(option.value === 'reset-params'){ // Params
-
+            
+            controls.use_lorenz();
             controls.reset_params();
 
         }if(option.value === 'disturbance-amplitude-input'){
@@ -235,7 +236,20 @@ window.addEventListener('load', function() {
             controls.disable_ticker_timer();
             controls.enable_ticker_timer();
 
-        }/*else if (option.value === 'preset-rho28-chaos') {
+        }else if (option.value === 'new-sys-scatter') {
+
+            controls.use_new_sys();
+            lorenz.display.scale = 1 / 100;
+            controls.reset_view();
+            controls.persp();
+            controls.disable_ticker_timer();
+
+            controls.clear();
+
+            for (var i = 1; i <= 64; i++)
+                controls.add(); 
+        }
+        /*else if (option.value === 'preset-rho28-chaos') {
 
             lorenz.display.scale = 1 / 25;
             controls.reset_view();
@@ -266,6 +280,7 @@ window.addEventListener('load', function() {
 });
 
 function presetParams(rho, method, preset_samples){
+    controls.use_lorenz();
     lorenz.display.scale = 1 / rho;
     controls.reset_view();
     controls.persp();
