@@ -248,34 +248,23 @@ window.addEventListener('load', function() {
 
             for (var i = 1; i <= 64; i++)
                 controls.add(); 
-        }
-        /*else if (option.value === 'preset-rho28-chaos') {
 
-            lorenz.display.scale = 1 / 25;
+            controls.rotate(0.004);
+        }else if (option.value === 'new-sys-preset') {
+
+            controls.use_new_sys();
+            lorenz.display.scale = 1 / 50;
             controls.reset_view();
-
-            controls.reset_params();
-            flush_param_inputs(lorenz);
+            controls.persp();
+            controls.disable_ticker_timer();
 
             controls.clear();
-            controls.add();
-            for (var i = 1; i <= 32-1; i++)
-                controls.clone();
 
-        }else if (option.value === 'bendy') {
+            controls.add([5, 20, 20]);
+            controls.add([10, 20, 10]);
 
-            lorenz.display.scale = 1 / 65;
-
-            controls.set_sigma(17.24);
-            controls.set_beta(1.1);
-            controls.set_rho(217);
-            flush_param_inputs(lorenz);
-
-            controls.clear()
-            for (var i = 1; i <= 32; i++)
-                controls.add();
-
-        }*/
+            controls.rotate(0.005);
+        }
     });
 });
 
