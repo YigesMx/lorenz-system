@@ -17,14 +17,18 @@ I fixed some problems and add some features to the original project:
     - Quick change view point: view from X, -Y, Z axis.
     - Toggle and show Ticker-Timer: If toggled on, when the solutions project on a plane, the time axis will be displayed on the normal direction.
     - Reset View.
-    - Toggle Axes.
+    - Toggle Axes: The axis will be displayed at the length of rho.
     - Modify step size (simulation percision).
     - Modify steps of simulation per frame (speed).
     - Modify the Ticker-Timer's speed (scale of the time axis).
   - Solutions
     - Specify the number of solutions to add.
     - Add solutions at a specific point.
-  - Presets 
-    - More presets under different parameters to reveal the evolution of lorenz system. (When finishing a assignment of the Dynamics System course.)
+  - Notes & Presets 
+    - Quick view sets.
+    - A **detailed analysis** of the parameter space of lorenz system.
+    - More presets when exploring parameter space to reveal the complex and gorgeous evolution of lorenz system. (A *Nonlinear Dynamics and Chaos* course assignment.)
+  - Params
+    - Some feature needed in the assignment.
 - Fixed some problems:
   - Wrong binding of the param 'rho', etc.

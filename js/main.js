@@ -238,6 +238,9 @@ window.addEventListener('load', function() {
 
         }else if (option.value === 'new-sys-scatter') {
 
+            controls.reset_params();
+            flush_param_inputs(lorenz);
+
             controls.use_new_sys();
             lorenz.display.scale = 1 / 100;
             controls.reset_view();
@@ -251,6 +254,9 @@ window.addEventListener('load', function() {
 
             controls.rotate(0.004);
         }else if (option.value === 'new-sys-preset') {
+
+            controls.reset_params();
+            flush_param_inputs(lorenz);
 
             controls.use_new_sys();
             lorenz.display.scale = 1 / 50;
@@ -268,14 +274,21 @@ window.addEventListener('load', function() {
     });
 });
 
-function presetParams(rho, method, preset_samples){
+function presetParams(sigma, beta, rho, method, preset_samples){
     controls.use_lorenz();
     lorenz.display.scale = 1 / rho;
-    controls.reset_view();
+    // controls.reset_view();
     controls.persp();
     controls.disable_ticker_timer();
 
+    // 均保留六位小数
+    sigma = parseFloat(sigma.toFixed(6));
+    beta = parseFloat(beta.toFixed(6));
+    rho = parseFloat(rho.toFixed(6));
+
     controls.reset_params();
+    controls.set_sigma(sigma);
+    controls.set_beta(beta);
     controls.set_rho(rho);
     flush_param_inputs(lorenz);
 
@@ -331,22 +344,6 @@ var setValueTriggerInput = (function() {
 })();
 
 function flush_param_inputs(lorenz) {
-    // setTimeout(function() {
-    //     setValueTriggerInput('length-input', Math.round(Math.log2(lorenz.length)));
-    // }, 0);
-
-    // setTimeout(function() {
-    //     setValueTriggerInput('sigma-input', lorenz.params.sigma);
-    // }, 50);
-
-    // setTimeout(function() {
-    //     setValueTriggerInput('beta-input', lorenz.params.beta);
-    // }, 100);
-
-    // setTimeout(function() {
-    //     setValueTriggerInput('rho-input', lorenz.params.rho);
-    // }, 150);
-
     document.getElementById('length-input').value = Math.round(Math.log2(lorenz.length));
     document.getElementById('sigma-input').value = lorenz.params.sigma;
     document.getElementById('beta-input').value = lorenz.params.beta;

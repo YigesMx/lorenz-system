@@ -20,7 +20,7 @@ function Lorenz(canvas) {
         rho_disturb_A: 0,
         rho_disturb_w: 0.1,
         step_size: 0.001,
-        steps_per_frame: 6,
+        steps_per_frame: 10,
         paused: false
     };
     this.display = {
@@ -36,12 +36,12 @@ function Lorenz(canvas) {
         roll: 0,
         ticker_speed: 1,
         damping: false,
-        _length: 512 // change through length getter/setter
+        _length: 1024 // change through length getter/setter
     };
     this.axis_colors = [ // 坐标轴颜色，作为uniform变量传入
         [235/255, 47/255, 6/255],
         [74/255, 105/255, 189/255],
-        [250/255, 152/255, 58/255]
+        [250/255, 152/255, 58/255],
     ]
 
     this.get_default_params = (function() {

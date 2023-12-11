@@ -26,14 +26,14 @@
         <li>
           <h1>Display</h1>
           <li><kbd></kbd>
-            <label>left-click + drag: rotate X/Y</label>
+            <label>left-click + drag: rotate</label>
           </li>
           <li><kbd></kbd>
-            <label>middle-click + drag: translate X/Y</label>
+            <label>middle-click + drag: translate</label>
           </li>
-          <li><kbd></kbd>
+          <!-- <li><kbd></kbd>
             <label>shift + click + drag: rotate/translate Z</label>
-          </li>
+          </li> -->
           <li><kbd></kbd>
             <label>mousewheel: zoom in/out</label>
           </li>
@@ -88,8 +88,8 @@
             <button id="toggle-rotation-damping" onclick="setValueTriggerInput('option', this.id);">Toggle Rotation Damp (Slow Down)</button>
           </div>
           <li>
-            <input id="length" type="range" min="2" max="15" step="1" oninput="setValueTriggerInput('length-input', this.value)"/>
-            <input class="input-box" id="length-input" type="number" min="2" max="15" step="1" oninput="setValueTriggerInput('length', this.value)"/>
+            <input id="length" type="range" min="2" max="16" step="1" oninput="setValueTriggerInput('length-input', this.value)"/>
+            <input class="input-box" id="length-input" type="number" min="2" max="16" step="1" oninput="setValueTriggerInput('length', this.value)"/>
             <label>tail = <span class="label" id="length-label"></span></label>
           </li>
           <li>
@@ -98,7 +98,7 @@
           </li>
           <li>
             <span>steps per frame (simulation speed):</span>
-            <input class="input-box" id="steps-per-frame-input" type="number" min="1" max="50" step="1" value="6" oninput="setValueTriggerInput('option', this.id)"/>
+            <input class="input-box" id="steps-per-frame-input" type="number" min="1" max="50" step="1" value="10" oninput="setValueTriggerInput('option', this.id)"/>
           </li>
           <li>
             <span>ticker speed (time axis scale):</span>
@@ -171,26 +171,37 @@
           为了方便地观察下方的 Presets，除了自行使用左侧面板的视角控制器外，这里也提供以上按钮快速重置常用视角。
         </p>
         <p>
-          同时，为了保证时间轴的一致性，使用 x-t view 和 y-t view 时，由于点击它们时会立即重置并启动 ticker-timer，所以请先按空格键暂停模拟，提前设置好 tail 长度（对于需要使用时间轴的可以尽量设置长一些），再点击 x-t view 和 y-t view 按钮，最后再清空、加入解，并继续模拟。
+          注意这里的 x-t view 和 y-t view 中时间轴为“伪时间轴”，只是通过绘图时将轨迹抬升一个纬度观察，所以在这两个视角下，时间轴的长度并不代表真实的时间，其行为也会随其他参数的改变有一些诡异的现象，但若仅仅作为观察时间上的轨迹的工具，还是没有问题的。并且这个视角下，原点处为“当前时间”，而轨迹末端才是 $t=0$ 时刻。
         </p>
         <p>
-          尽管支持实时调整以上参数，不会出现程序上的错误，但是在生成轨迹的过程中改变生成轨迹的参数，不能保证时间轴上行为的视觉一致性，如果为了看到严谨的结果，请按上述步骤执行。
+          尽管支持实时调整各种参数，不会出现程序上的错误，但是在生成轨迹的过程中改变生成轨迹的参数，不能保证“伪时间轴”上行为的视觉一致性，如果为了看到严谨的结果，请按下述步骤执行：
+        </p>
+        <p>
+          如果需要为了保证时间轴的一致性，由于点击 x-t view 和 y-t view 时会立即重置并启动 ticker-timer，所以请先按空格键暂停模拟，提前设置好 tail 长度（对于需要使用时间轴的可以尽量设置长一些），再点击 x-t view 和 y-t view 按钮，最后再清空、加入解（或使用预设），并按空格键开始模拟。
         </p>
       </details>
 
       <div class="scrollable" id="presets-contents">
+        <div style="text-align: center;">
+          <h1>Exploring Parameter Space</h1>
+          <p style="text-align: right;">A <em>Nonlinear Dynamics and Chaos</em> Course Assignment</p>
+          <p style="text-align: right;">21421019 Yiges.M.x.</p>
+        </div>
         <h2><span class="title-span">0.</span> 前言</h2>
         <p>
-          本笔记主要根据《Nonlinear Dynamics and Chaos With Applications to Physics, Biology, Chemistry, and Engineering》(Steven H. Strogatz) 一书中第五章的内容，讨论 Lorenz 方程的参数空间，以及参数对系统的影响。
+          本笔记主要根据《Nonlinear Dynamics and Chaos With Applications to Physics, Biology, Chemistry, and Engineering》(Steven H. Strogatz) 一书中第五章以及相关的内容，讨论 Lorenz 方程的参数空间，以及参数对系统的影响。
         </p>
         <p>
           笔者也尝试过使用 Mathematica 或其他数值/符号计算软件对 Lorenz 方程进行分析，但这些软件本身大部分局限于 CPU 绘制，在仿真的实时性、交互性上较差，若要使用 GPU 绘制，又需要通过 C/C++，使用 CUDA 或 OpenGL 接口从零开始编写，重新学习这些数值或符号计算软件与这些图形接口的配合十分复杂。于是笔者想到了结合正在学习的另一门计算机图形学的课程，通过使用 JS 编写仿真程序并通过使用  GLSL 的 WebGL 调用 GPU 来进行并行的实时绘制，实现实时的仿真和交互。本笔记的主要内容就是基于这个想法与检索到的开源仓库，经过大量的修改完善完成的。
         </p>
         <p>
-          特别的，本仿真过程对 lorenz 系统的模拟使用了固定步长的4阶 Runge-Kutta 方法，这个方法本身一定程度上保证了模拟的精度，此外还可以通过进一步调整步长来控制精度。由于是数值模拟，不同方法和选取的精度都可能会对结果产生影响，所以在这个具体实现中选取的初值，不一定在其他软件或平台上有相同的行为，甚至在调整精度（Step Size）后都会呈现不同的行为，这与数值计算的精度和系统本身的混沌性质都息息相关。
+          当然其中一些静态图像的绘制依然使用了 Mathematica，但这些图像的绘制也是为了更好地展示一些概念，或者是为了更好地展示一些数值模拟的结果。
         </p>
         <p>
-          此外额外说明一下，未经说明的话（例如指明使用的初值），以下笔记中的模拟中的初值都是每次运行时随机生成的，这有助于观察系统的一般性质与行为。（包括“生成一个点并对一个点加以扰动”，第一个点都是随机选取的，除非指定了被扰动点的位置，读者也可以在左侧面板中自行加入新的初值或清空所有解）
+          特别的，本实时仿真过程对 Lorenz 系统的模拟使用了4阶 <a href="https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods">Runge-Kutta 方法</a> (RK4)。这个方法本身一定程度上保证了数值模拟的准确性，此外还可以通过进一步调整步长来进一步控制精度。由于是数值模拟，不同方法和选取的精度都可能会对结果产生影响，所以在这个具体实现中选取的初值，不一定在其他软件或平台上有相同的行为，甚至在调整精度（Step Size）后都会呈现不同的行为，这与数值计算的精度和系统本身的混沌性质都息息相关。
+        </p>
+        <p>
+          此外额外说明一下，未经说明的话（例如指明使用的初值），以下笔记中的模拟使用的初值都是每次运行时随机生成的，这有助于观察系统的一般性质与行为。（包括“生成一个点并对一个点加以扰动”，第一个点都是随机选取的，除非指定了被扰动点的位置，读者也可以在左侧面板中自行加入新的初值或清空所有解）
         </p>
         
         <h2><span class="title-span">1.</span> 混沌 与 Lorenz Equation</h2>
@@ -211,7 +222,7 @@
             Lorentz 方程来源
           </summary>
           <p>
-            Lorentz 方程是基于纳维－斯托克斯方程、连续性方程和热传导方程简化得出，最初的形式为：
+            Lorenz 方程是基于纳维－斯托克斯方程 (Navier-Stokes equations)、连续性方程和热传导方程简化得出，最初的形式为：
             $$
             \begin{aligned}
             \frac { \partial \vec v }{\partial t} + \left( \vec v \nabla \right) \vec v &=
@@ -220,10 +231,13 @@
             {\frac {\partial T}{\partial t}}+\nabla \cdot \left(T{\vec {v}}\right) &= \chi \nabla ^{2}T \\
             \end{aligned}
             $$
-            其中，$\vec v$ 为流速，$\rho$ 为流体密度，$T$ 为流体温度。$T_0$ 为上限温度，$p$ 为压强，$\vec g$ 为重力加速度，$\nu$ 为运动粘度系数，$\chi$ 为热扩散系数，$\gamma$ 为热膨胀系数。简化后获得上述 Lorenz方程。
+            其中，$\vec v$ 为流速，$\rho$ 为流体密度，$T$ 为流体温度。$T_0$ 为上限温度，$p$ 为压强，$\vec g$ 为重力加速度，$\nu$ 为运动粘度系数，$\chi$ 为热扩散系数，$\gamma$ 为热膨胀系数。简化后获得下方的 Lorenz 方程。
             <h5>from <a href="https://zh.wikipedia.org/wiki/%E6%B4%9B%E4%BC%A6%E8%8C%A8%E5%90%B8%E5%BC%95%E5%AD%90">wikipedia</a></h5>
           </p>
         </details>
+        <p>
+          Lorenz 方程由 Lorenz 在研究大气对流时提出，用于描述大气中的对流运动。
+        </p>
         <p>
           $$
           \begin{aligned}
@@ -234,15 +248,65 @@
           $$
           式中，参数 $\sigma \gt 0,\rho \gt 0,\beta \gt 0$，$\sigma$ 为 Prandtl 数，$\rho$ 为 Rayleigh 数，$\beta$ 为几何参数（在对流问题中与卷的纵横比有关）。
         </p>
+        <p>
+          在参数空间中，Lorenz 方程的解的性质随参数的变化而变化。三个参数中，$\sigma$ 和 $\beta$ 主要由系统本身决定，一般而言为常数。$\rho$ 可以理解为外界环境对系统的影响（输入）与系统耗散（泄漏/摩擦等）。
+        </p>
+        <p>
+          为了简化问题，我们首先选择在前两个参数固定时，改变 $\rho$ 来研究系统的性质。特别的参考各个文献，可以固定 $\sigma = 10$，$\beta = \frac{8}{3}$，来讨论 $\rho$ 的影响。相对于其他参数，这已经是一个简单的情形了，尽管通过接下来的分析我们依然可以发现它已经十分的复杂。
+        </p>
+        <p>
+          而对于其他参数，我也将在下面的分析后，再展示一些特殊的现象。这些现象与性质都可以体现出 Lorenz 系统有序与混沌之美的统一。
+        </p>
 
-        <h2><span class="title-span">2.</span> 参数空间的讨论</h2>
-        <p>
-          在参数空间中，Lorenz 方程的解的性质随参数的变化而变化。三个参数中，$\sigma$ 和 $\beta$ 主要由系统本身决定，一般而言为常数。$\rho$ 可以理解为外界环境对系统的影响（输入）与系统耗散（泄漏/摩擦等）。在 $\sigma$ 和 $\beta$ 各自取不同的值时，理论上都可以调节 $\rho$ 来达到一致的性质。所以为了简化问题，我们选择在前两个参数固定时，改变 $\rho$ 来研究系统的性质。
-        </p>
-        <p>
-          特别的参考各个文献，可以固定 $\sigma = 10$，$\beta = \frac{8}{3}$，来讨论 $\rho$ 的影响。
-        </p>
+        <h2><span class="title-span">2.</span> $\sigma = 10, \beta = \frac{8}{3}$</h2>
         <div>
+          <h3><span class="title-span">2.0</span> Illustration</h3>
+          <p>
+            首先我们通过前人或通过数值或通过解析的方式得到的分岔图，来大致了解固定 $\sigma = 10, \beta = \frac{8}{3}$ 时， $\rho$ 的影响。
+          </p>
+          <p>
+            首先是书中讨论参数空间时给到的一张图片：
+          </p>
+          <div class="img-block">
+            <img src="./assets/bifraction_diagram_book.png" alt="bifraction_diagram_book">
+          </div>
+          <p>
+            这张图片简单地给出了当 $0 \leq \rho \leq 28$ 时系统所发生的一些“简单的分岔”与系统所处于的整体状态，也是我们下面首先分析的参数范围。
+          </p>
+          <p>
+            然而对于更广的参数范围，我们可以通过数值的方法来得到更广的参数范围的“类分岔图”，例如下面这张图片：
+          </p>
+          <div class="img-block">
+            <img src="./assets/bifraction_diagram_rho_0_330.png" alt="bifraction_diagram_rho_0_330">
+          </div>
+          <p>
+            我绘制出这张图片的第一反应是：一张非常瑰丽的图像，在混乱中带点规律，给人一种惊奇的感觉。它在很多范围内呈现混乱无序的状态，又在另一些区域内呈现令人惊讶的有序。而它何时有序，何时无序，似乎又是个“随机”的过程（尽管方程是“确定”的）。
+          </p>
+          <p>
+            这张图片使用 <a href="https://www.wolfram.com/">Wolfram Language</a> 绘制（代码见仓库），方式是对于每个 $\rho$ 采样多个点进行模拟，在足够长的时间内对解到达 $z$ 方向上的极值点进行记录，即 $z'=0$ 时将其 $z$ 值记录下来，最后将这些点绘制在对应 $\rho$ 上方。
+          </p>
+          <p>
+            所以这张图并不是严格意义上的“分岔图”，而是通过蒙特卡洛方法进行采样，在足够长时间后对系统的“渐进最终状态”的一个记录。
+          </p>
+          <p>
+            （如果先阅读后面的讨论，或结合起来看下面这些内容，可能会帮助理解）
+          </p>
+          <p>
+            若这些初值的解最终收敛到极限环上，那么图形会与对应 $\rho = r$ 形成可数个交点。注意这里一个极限环在这个图上“至少”会形成两个交点，因为我们只记录了 $z$ 方向上的极值点，而一个简单的环在 $z$ 方向上的极值点有两个，所以至少会形成两个交点（若环有倍周期特性或奇怪的形状，则会形成更多的交点，其中倍周期情形产生的多个极值点这也可以在下面倍周期的相关讨论里面看到直观的解释，奇怪形状产生的多极值点可以参考 $\rho \approx 100.0$ 那一个倍周期区间的模拟）。
+          </p>
+          <p>
+            若这些解收敛到不动点上，那么图形会与对应 $\rho = r$ 形成一个交点。
+          </p>
+          <p>
+            若这些解不收敛，或进行了周期很大的运动，则会形成一些散布在 $z$ 方向上的点，在图中呈现一些灰色的混乱区域。
+          </p>
+          <p>
+            由此可以看出这个类“分岔图”首先不能展示一些排斥子，或不能直观展示。其次，周期很大的解也不是非常清楚，例如倍周期分岔多次后的图形就很接近混沌了，当然当这条界限模糊时也说明系统已经进入到了某种程度上的混沌。最后，这个图也不能很好地区分各个极限环和不动点，重叠的极值点只会展示一个，因为其在维度上进行了很大程度的压缩（三维到一维）。但是这个图可以很好地展示出系统的整体行为，以及在不同的参数下系统的行为的变化。
+          </p>
+          <p>
+            下面我们也将细致讨论这张图中的绝大部分区域。
+          </p>
+
           <h3><span class="title-span">2.1</span> $\rho \lt 1 $ </h3>
           <p>
             当 $\rho \lt 1 $ 时，经过课本中 9.2 的讨论，即通过对线性化系统的讨论和 Lyapunov 函数的构造，可以证明系统有全局稳定的不动点 $(0,0,0)$。
@@ -251,13 +315,16 @@
             <p>
               例如，以下是对 $\rho = 0.5$ 的仿真结果：
               <br/>
-              <button id="preset-rho05-scatter" onclick="presetParams(0.5,'scatter');">&rho; = 0.5</button>
+              <button id="preset-rho05-scatter" onclick="presetParams(10, 8/3, 0.5,'scatter');">&rho; = 0.5</button>
             </p>
           </div>
           
           <h3><span class="title-span">2.2</span> $\rho = 1$ </h3>
           <p> 
-            当 $\rho = 1$ 时，系统发生叉式分岔，但原点处依然稳定。并在所有的 $\rho > 1$ 后，出现两个新的不动点，记为 $ C^+$ 和 $C^-$：
+            当 $\rho = 1$ 时，系统发生叉式分岔，但原点处依然稳定。
+          </p>
+          <p>
+            在所有的 $\rho > 1$ 后，出现两个新的不动点，记为 $ C^+$ 和 $C^-$：
             $$
             \begin{aligned}
               x^* = y^* &= \pm \sqrt{\beta(\rho - 1)} \\
@@ -275,7 +342,7 @@
             <p>
               例如，以下是对 $\rho = 10$ 的仿真结果，也可以自行调整 $\rho$ 的值观察此区间内解的变化：
               <br/>
-              <button id="preset-rho10-scatter" onclick="presetParams(10,'scatter');">&rho; = 10</button>
+              <button id="preset-rho10-scatter" onclick="presetParams(10, 8/3, 10,'scatter');">&rho; = 10</button>
             </p>
           </div>
 
@@ -283,6 +350,12 @@
           <p>
             当 $\rho = 13.926$ 时，系统发生同宿分岔，$\rho = 13.926^+$ 时，系统产生两个鞍环，由书中 9.2 节所述，这是只有在大于等于三维的动力系统中会出现的一种不稳定极限环。
           </p>
+          <p>
+            这里对这个同宿分岔的展示可以参考以下图片，该图片来源于这个<a href="https://www.youtube.com/watch?v=-wjsjGQuFjY">视频</a>。这个视频着重讲解了这一个参数节点。
+          </p>
+          <div class="img-block">
+            <img src="./assets/homoclinic_bifurcation.png" alt="homoclinic_bifurcation", style="width: 70%;">
+          </div>
 
           <h3><span class="title-span">2.5</span> $13.926 \lt \rho \lt \rho_H = 24.74 $ </h3>
           <p>
@@ -303,20 +376,20 @@
             <p>
               例如，以下是对 $\rho = 21$ 的全局仿真结果（书中例9.5.1）：
               <br/>
-              <button id="preset-rho21-scatter" onclick="presetParams(21,'scatter');">&rho; = 21</button>
+              <button id="preset-rho21-scatter" onclick="presetParams(10, 8/3, 21,'scatter');">&rho; = 21</button>
             </p>
             <p>
               当然不是所有轨道都会出现暂态混沌，参考习题 9.5.6，我们找出 $\rho = 21$ 时，出现暂态混沌的三个初始条件，和不会出现暂态混沌的三个初始条件，分别作模拟：
             </p>
             <p>
-              <button id="preset-rho21-1" onclick="presetParams(21,'preset',[[1,1,20],[30,30,20],[30,30,10]]);">暂态混沌</button>
+              <button id="preset-rho21-1" onclick="presetParams(10, 8/3, 21,'preset',[[1,1,20],[30,30,20],[30,30,10]]);">暂态混沌</button>
               <br/>选取了三个点：
               <br/>(1, 1, 20): 离 z 轴比较近，暂态混沌时间最久；
               <br/>(30, 30, 20): 离 z 轴比较远，暂态混沌时间较短；
               <br/>(30, 30, 10): 也离 z 轴比较远，暂态混沌时间很短。
             </p>
             <p>
-              <button id="preset-rho21-2" onclick="presetParams(21,'preset',[[7,7,21],[5,5,20],[20,20,20]]);">非暂态混沌</button>
+              <button id="preset-rho21-2" onclick="presetParams(10, 8/3, 21,'preset',[[7,7,21],[5,5,20],[20,20,20]]);">非暂态混沌</button>
               <br/>选取了三个点：
               <br/>(7, 7, 21): 离 $C^+$ 非常近；
               <br/>(5, 5, 20): 也离 $C^+$ 非常近；
@@ -327,7 +400,7 @@
               <br/>- 如果离 $C^+$ 和 $C^-$ 的距离接近（比如在两个极限环内），那么大概率不会发生瞬态混沌。
               <br/>- 若距离 $C^+$ 和 $C^-$ 的距离远则有可能发生瞬态混沌，也可能不会发生
               （此时也对初值有比较强的敏感依赖性，这决定了一切都有可能，例如对
-              <button id="preset-rho21-2" onclick="presetParams(21,'chaos-preset',[[30,30,100]]);">(30, 30, 100)</button>
+              <button id="preset-rho21-2" onclick="presetParams(10, 8/3, 21,'chaos-preset',[[30,30,100]]);">(30, 30, 100)</button>
               的初值加以扰动，就会有解分别收敛到 $C^+$ 和 $C^-$ 且暂态混沌时间长短差异很大，可以通过 x-t 或 y-t 对比）
               <br/>- 如果离 z 轴很近，则非常容易发生瞬态混沌（如(0.1, 0.1, 20)等）。
             </p>
@@ -358,7 +431,7 @@
               下面是对 $\rho = 24.3$ 的局部仿真结果: （可以通过更改左侧“steps per frame”参数加速模拟，更直观看到效果）
               <br/>
               <button id="preset-rho243-local" onclick="
-                presetParams(24.3,'preset',[[5.5,5.5,23.3],[5.6,5.6,23.3],[5.7,5.7,23.3],[5.8,5.8,23.3],[5.9,5.9,23.3]]);">
+                presetParams(10, 8/3, 24.3,'preset',[[5.5,5.5,23.3],[5.6,5.6,23.3],[5.7,5.7,23.3],[5.8,5.8,23.3],[5.9,5.9,23.3]]);">
                 &rho; = 24.3
               </button>
             </p>
@@ -385,7 +458,7 @@
             <p>
               下面是对 $\rho = 24.3$ 的全局仿真结果: 
               <br/>
-              <button id="preset-rho243-scatter" onclick="presetParams(24.3,'scatter');">&rho; = 24.3</button>
+              <button id="preset-rho243-scatter" onclick="presetParams(10, 8/3, 24.3,'scatter');">&rho; = 24.3</button>
             </p>
             <p>
               可以注意到一些解逐步向内离开极限环，最终都被 $C^+$ 或 $C^-$ 吸引。而另一些点则在奇怪吸引子附近混沌地游荡，它们最终都不会被 $C^+$ 或 $C^-$ 吸引。
@@ -406,7 +479,7 @@
             <p>
               例如，以下是对 $\rho = 24.4 + 1.5 \cdot\sin\left( \omega t \right)$ 的全局随机仿真结果：
               <br/>
-              <button id="preset-rho2404-scatter-disturb" onclick="presetParams(24.4,'scatter-disturb');controls.enable_ticker_timer();">&rho; = 24.4 + 1.5sin(wt)</button>
+              <button id="preset-rho2404-scatter-disturb" onclick="presetParams(10, 8/3, 24.4,'scatter-disturb');controls.enable_ticker_timer();">&rho; = 24.4 + 1.5sin(wt)</button>
             </p>
           </div>
           <p>
@@ -415,19 +488,17 @@
 
           <h3><span class="title-span">2.6</span> $\rho = \rho_H = 24.74 $ </h3>
           <p>
-            当 $\rho = \rho_H$ 时，两个鞍环与 $C^+$ 和 $C^-$ 合并，系统发生亚临界 Hopf 分岔（$\rho$ 从大到小来看是分岔），此时 $C^+$ 和 $C^-$ 变为不稳定不动点。
+            当 $\rho = \rho_H$ 时，两个鞍环与 $C^+$ 和 $C^-$ 合并，系统发生亚临界 Hopf 分岔，此时 $C^+$ 和 $C^-$ 变为不稳定不动点。
           </p>
 
           <h3><span class="title-span">2.7</span> $24.74 \lt \rho \lt 313 $ </h3>
           <p>
-            此后 $C^+$ 和 $C^-$ 变为不稳定不动点，所有靠近的解都将被排斥到较远的吸引子。但我们知道，这个系统有体积收缩的性质，所以他不能被排斥到无穷远，而是会被排斥到一个有限的区域内。但从分岔图上来看，我们看不到任何稳定轨道或不动点等吸引子的迹象。
-            <strong>插图！！！</strong>
-            所以在这个范围一定有奇特的现象发生。现在我们知道，这一切都是一个或若干奇怪吸引子的作用（当然还有例外，后面会提到）。
+            此后 $C^+$ 和 $C^-$ 变为不稳定不动点，所有靠近的解都将被排斥到较远的吸引子。但我们知道，这个系统有体积收缩的性质，所以他不能被排斥到无穷远，而是会被排斥到一个有限的区域内。但从前面给出的书上的小范围分岔图上来看，我们看不到任何稳定轨道或不动点等吸引子的迹象。所以在这个范围一定有奇特的现象发生。现在我们知道，这一切都是一个或若干奇怪吸引子的作用（当然还有例外的情况，在一些参数下这个奇怪吸引子会发生戏剧性的变化，变为普通的极限环，后面会提到）。
           </p>
 
           <h4><span class="title-span">2.7.1</span> $24.74 \lt \rho \leq 28 $ </h4>
           <p>
-            课本 9.4 节，介绍了 lorenz 及一些学者的工作。这些工作对略微大于 $24.74$ 的情况排除了稳定极限环，并且证明了 lorenz 方程事实上存在奇怪吸引子，并不是数值模拟造成的“错觉”。
+            课本 9.4 节，介绍了 Lorenz 及一些学者的工作。这些工作对略微大于 $24.74$ 的情况排除了稳定极限环，并且证明了 Lorenz 方程事实上存在奇怪吸引子，并不是数值模拟造成的“错觉”。
           </p>
           <p>
             结论是，在 $\rho \gt \rho_H = 24.74 $ 后的一段 $\rho$ 范围内，系统只有一个奇怪吸引子，系统呈现全局的混沌状态：所有的解都会被奇怪吸引子吸引，在附近不规则、无周期地游荡。
@@ -436,7 +507,7 @@
             <p>
               例如，以下是对 $\rho = 28$ 的全局随机仿真结果：
               <br/>
-              <button id="preset-rho28-scatter" onclick="presetParams(28,'scatter');">&rho; = 28</button>
+              <button id="preset-rho28-scatter" onclick="presetParams(10, 8/3, 28,'scatter');">&rho; = 28</button>
             </p>
             <p>
               这也是书中例 9.3 讨论的部分，这部分除了展示这种混沌特性外，还证明了相邻轨道的指数速度分离，并给出了混沌和奇怪吸引子的一种定义。其中的一些内容也在前面提及奇怪吸引子时有所涉及。
@@ -444,7 +515,7 @@
             <p>
               我们也可以通过选择一系列初始非常接近的点（或者说对一个初值进行微小扰动），来直观感受“对初值的敏感依赖性”以及混沌的美：
               <br/>
-              <button id="preset-rho28-chaos" onclick="presetParams(28,'chaos');">&rho; = 28</button>
+              <button id="preset-rho28-chaos" onclick="presetParams(10, 8/3, 28,'chaos');">&rho; = 28</button>
             </p>
           </div>
 
@@ -458,6 +529,11 @@
               214 &\lt \rho \lt 313
             \end{aligned}
             $$
+          </p>
+          <p>
+            当然，也能从开头给出的数值模拟得到的近似“分岔图”看到这些穿插的奇怪的有序区域。
+          </p>
+          <p>
             下面将结合书中习题，选取一些区间或值进行一些模拟分析：
           </p>
           <div class="simulation-block">
@@ -465,71 +541,143 @@
               首先，参考习题 9.5.1 和 9.5.3，对 $145 \lt \rho \lt 166$ 及附近的值进行仿真分析和大致分类。我们从 $\rho$ 由大到小的变化来详细看看这一过程：
             </p>
             <p>
-              当 $ \rho > 166.07 $ （略微）时，没有极限环，系统进入一种“阵发性”混沌的状态，系统会在看似有稳定周期解一段时间后突然陷入短暂的混乱状态又恢复周期解（看似在一个极限环的附近），并不断重复。
+              当 $ \rho > 166.07 $ （略微）时，没有极限环，系统进入一种“阵发性”混沌的状态，系统会在看似有稳定周期解一段时间后突然陷入短暂的混乱状态又恢复近似的周期解（看似在一个极限环的附近），并不断重复。
             </p>
             <p>
               以下是对 $ \rho = 166.3 $ 的仿真：（可以使用 x-t view 或 y-t view，并且以下所有模拟建议适当增加 simulation speed 来快速查看系统的更长期的行为）
               <br/>
-              <button id="preset-rho16607-single" onclick="presetParams(166.3,'single');">&rho; = 166.3</button>
+              <button id="preset-rho16607-single" onclick="presetParams(10, 8/3, 166.3,'single');">&rho; = 166.3</button>
             </p>
             <p>
-              书中称 $145 \lt \rho \lt 166$ 左右这个区间为一个“倍周期”区间。
+              接下来，我们探索 $145 \lt \rho \lt 166$ 左右的区间，书中称这个区间为一个“倍周期”区间。
             </p>
             <p>
-              当 $ \rho = 166.07 $ 时，系统产生一个单独的稳定对称的极限环。
+              当 $\rho$ 减小到 $ \rho = 166.07 $ 时，系统产生一个单独的稳定的极限环。
             </p>
             <p>
               以下是对 $ \rho = 166.0 $、 $ \rho = 160.0 $ 和 $ \rho = 155.0 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到一个极限环上：
               <br/>
-              <button id="preset-rho16600-scatter" onclick="presetParams(166,'scatter');">&rho; = 166.0</button>
-              <button id="preset-rho16000-scatter" onclick="presetParams(160,'scatter');">&rho; = 160.0</button>
-              <button id="preset-rho15500-scatter" onclick="presetParams(155,'scatter');">&rho; = 155.0</button>
+              <button id="preset-rho16600-scatter" onclick="presetParams(10, 8/3, 166,'scatter');">&rho; = 166.0</button>
+              <button id="preset-rho16000-scatter" onclick="presetParams(10, 8/3, 160,'scatter');">&rho; = 160.0</button>
+              <button id="preset-rho15500-scatter" onclick="presetParams(10, 8/3, 155,'scatter');">&rho; = 155.0</button>
             </p>
             <p>
-              当 $ \rho = 154.4 $ 时，这个单独的稳定对称极限环分裂成两个稳定但不对称的极限环。
+              当 $ \rho = 154.4 $ 时，这个单独的稳定对称极限环分岔成两个稳定的极限环，注意这里并不是倍周期分岔，仅仅是极限环的分岔。
             </p>
             <p>
               以下是对 $ \rho = 154.0 $ 和 $ \rho = 148.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到两个极限环上：
               <br/>
-              <button id="preset-rho15400-scatter" onclick="presetParams(154,'scatter');">&rho; = 154.0</button>
-              <button id="preset-rho14850-scatter" onclick="presetParams(148.5,'scatter');">&rho; = 148.5</button>
+              <button id="preset-rho15400-scatter" onclick="presetParams(10, 8/3, 154,'scatter');">&rho; = 154.0</button>
+              <button id="preset-rho14850-scatter" onclick="presetParams(10, 8/3, 148.5,'scatter');">&rho; = 148.5</button>
             </p>
             <p>
-              当 $ \rho = 148.2 $ 时，这两个单独的极限环各自又分裂成两个极限环，形成四个极限环。并且每个极限环周期翻倍。
+              经过一些拓扑简化，可以发现其中一个极限环绕另外一个极限环绕行了三次：
+            </p>
+            <div class="img-block">
+              <img src="./assets/rho148.5_topo.gif" alt="rho148.5_topo.gif" style="width: 70%;">
+            </div>
+            <p>
+              当 $ \rho = 148.2 $ 时，这两个单独的极限环各自发生倍周期分岔，每个极限环周期翻倍。从图上看看起来是四个极限环，然而实际上每个极限环是在绕两周后回到原来的点。
             </p>
             <p>
-              当 $ 145 \lt \rho \lt 148.2 $ 时，随着 $\rho$ 的减小，出现了无限次这样的的周期翻倍的分岔，所以结合来看，这应该也是 $145 \lt \rho \lt 166$ 等区间被称为“倍周期”区间的原因。
+              这里也可以通过如下图片直观理解所谓的“倍周期”分岔：
+            </p>
+            <div class="img-block">
+              <img src="./assets/period_doubling_bifraction.png" alt="period_doubling_bifraction">
+            </div>
+            <p>
+              即类似于这里左侧红色的稳定的极限环在一个参数临界点后忽然变为右侧这样周期翻倍的极限环的过程。也可以参照一维映射中的倍周期分岔的例子进行类比，他们都是一个周期轨道的周期加倍，并会当参数变化时，在一个降维映射中突然留下更多痕迹（例如Logistic Map）。
             </p>
             <p>
-              以下是对 $ \rho = 148.0 $ 和 $ \rho = 147.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到四个以上的极限环上：
+              当 $ 145 \lt \rho \lt 148.2 $ 时，随着 $\rho$ 的减小，出现了无限次这样的的周期翻倍的分岔，这也是 $145 \lt \rho \lt 166$ 被称为“倍周期”区间的原因。
+            </p>
+            <p>
+              以下是对 $ \rho = 148.0 $ 和 $ \rho = 147.5 $ 的仿真，可以看到初始时随机生成的大量初始条件最终都会收敛到两个极限环上，且每个极限环实际绕了两圈，虽然看起来像多个独立的极限环。
               <br/>
-              <button id="preset-rho14800-scatter" onclick="presetParams(148,'scatter');">&rho; = 148.0</button>
-              <button id="preset-rho14750-scatter" onclick="presetParams(147.5,'scatter');">&rho; = 147.5</button>
+              <button id="preset-rho14800-scatter" onclick="presetParams(10, 8/3, 148,'scatter');">&rho; = 148.0</button>
+              <button id="preset-rho14750-scatter" onclick="presetParams(10, 8/3, 147.5,'scatter');">&rho; = 147.5</button>
             </p>
             <p>
-              当 $ \rho = 145 $ 时，系统经过无限次上述“倍周期”分岔后，分岔得到的系列极限环最终组合成一个奇怪吸引子，系统呈混沌状态。
+              当 $\rho$ 逐步减小至 $ \rho = 145 $ 时，系统经过了无限次上述“倍周期”分岔。分岔得到的系列极限环最终组合混杂成一个奇怪吸引子，系统呈混沌状态。
             </p>
             <p>
               以下是对 $ \rho = 145.0 $ 的仿真：
               <br/>
-              <button id="preset-rho14500-scatter" onclick="presetParams(145,'scatter');">&rho; = 145.0</button>
+              <button id="preset-rho14500-scatter" onclick="presetParams(10, 8/3, 145,'scatter');">&rho; = 145.0</button>
+            </p>
+            <p>
+              正如课堂上所讲，倍周期分岔现象也被认为是奇怪吸引子产生的一种重要方式，也是系统混沌的一种重要外在表现。
+            </p>
+            <p>
+              例如 Rossler 系统走向混沌的过程，也是随着参数连续变化，系统中的一个极限环不断发生倍周期分岔而产生了奇怪吸引子。上面直观理解倍周期分岔的图片的来源，以及倍周期分岔和 Rossler 系统的简单展示都可以见以下这篇<a href="https://www.zhihu.com/question/68229746">文章</a>。
+            </p>
+            <p>
+              通过下面放大开头给出的近似“分岔图”，我们也能一睹在 $\rho$ 逐步减小时，系统是如何发生倍周期分岔的。
+            </p>
+            <div class="img-block">
+              <img src="./assets/bifraction_diagram_rho_140_170.png" alt="bifraction_diagram_rho_140_170">
+            </div>
+            <p>
+              可以看到随着 $\rho$ 逐步减小，混沌的状态戛然而止，并且结合模拟我们可以知道，这是由于系统产生一个有四个不同 $z$ 方向极值（下面简称极值）的关于 $z$ 轴中心对称的极限环。在 $\rho \approx 154.4 $ 时，突然变成了八个不同极值，结合模拟可以知道，这是由于上述极限环发生了分裂，生成了两个极限环，每个极限环都有 $8$ 个不同的极值，但由于两个极限环关于 $z$ 轴中心对称，所以他们一共只有八个不同的极值（也就是说在这个图上重叠了，并且由于这个对称性导致的重叠，后续我们始终只能在图上看见一个极限环的极值）。在 $\rho \approx 148.2 $ 时，极值数量再次翻倍，结合模拟可以发现，这是由于上述两个极限环发生了倍周期分岔，每个极限环周期翻倍，并且极值数量也发生了翻倍，且虽然每个极限环两次绕行的轨道间距很小，但依然造成了不同的极值。此后发生这样的分岔的 $\rho$ 的间距越来越小，并且这些极值迅速产生重叠，并进入混沌的状态。
+            </p>
+            <p>
+              此外也可以发现在 $\rho \lt 145.0$ （略微）的时候，也存在一些很小的周期窗口，例如 $\rho \approx 143.3$，这里发生的事情与此前讨论的 $145 \lt \rho \lt 166$ 如出一辙，可以自行模拟尝试。
+            </p>
+            <p>
+              注：虽然不能通过分岔图直接得出各种分岔的结论，因为前面也提到图上的这种看起来的“分岔”可能是多种原因造成的，并且就算有分岔也不一定会显示在图上，这也是降维过程中一定存在的损失。不过我们依然能从图上窥见上面这些有趣的现象。
             </p>
           </div>
           <div class="simulation-block">
             <p>
-              接下来，参考习题 9.5.2 简单看看 ，当 $\rho = 212$ 时，系统所呈现的性质。
+              与 $145 \lt \rho \lt 166$ 类似，我们对 $212 \lt \rho \lt 313$ 及附近的值进行仿真分析和大致分类。但这次我们从 $\rho$ 由小到大的变化来简略地看看这一过程：
+            </p>
+            <p>
+              首先，参考习题 9.5.2 简单看看 ，当 $\rho = 212$ 时，系统所呈现的性质。
             </p>
             <p>
               以下是对 $ \rho = 212.0 $ 的仿真：
               <br/>
-              <button id="preset-rho21200-scatter" onclick="presetParams(212,'scatter');">&rho; = 212.0</button>
+              <button id="preset-rho21200-scatter" onclick="presetParams(10, 8/3, 212,'scatter');">&rho; = 212.0</button>
             </p>
             <p>
-              可以看到所有解最终都在一个区域内进行类似周期的行为，这在书中称为噪声周期性。
+              可以看到所有解最终都在两个互相穿过的拓扑区域（两个奇怪吸引子？）内进行类似周期的混乱行为，这在书中称为噪声周期性。相比于前面分析的 $145 \lt \rho \lt 166$ 区间中的两个极限环，这里的两个区域更加明显，且容易发现其中一个区域只绕行了另一个区域一次。
+            </p>
+            <p>
+              当 $ \rho = 213.0 $ 左右时，上述两个区域迅速塌缩，系统产生两个稳定对称的极限环（看起来是两组，每组都有非常多极限环，但实际上是两个，只是每个极限环的周期非常大，会在相近的一系列轨道上绕行很多圈回到原来的地方，就和此前 $145 \lt \rho \lt 166$ 讨论的类似）。
+            </p>
+            <p>
+              当 $ \rho = 231.0 $ 左右时，上述两个极限环最终各自自己与自己合并为一个周期最小的极限环，整个系统此时存在两个互相穿过的简单环。
+            </p>
+            <p>
+              以上过程可以通过自行缓慢增加 $\rho$ 的方式来观察（滑动下方的 $\rho$ 旁边的滑动条，或点击/按住输入框旁边的三角形），以下是对中间过程 $ \rho = 224.0 $ 和 $ \rho = 231.0 $ 的仿真：
+              <br/>
+              <button id="preset-rho21200-scatter" onclick="presetParams(10, 8/3, 224,'scatter');">&rho; = 224.0</button>
+              <button id="preset-rho21200-scatter" onclick="presetParams(10, 8/3, 231,'scatter');">&rho; = 231.0</button>
+            </p>
+            <p>
+              接下来随着 $\rho$ 的增加，这两个极限环缓慢靠拢，直到 $\rho = 313$ 时，两个极限环合并为一个极限环。以上整个过程也是极限环的分岔过程。
+            </p>
+            <p>
+              这部分可以直接观察开头给出的近似“分岔图”来理解，这部分在原图中占有较大的区域。
+            </p>
+            <div class="img-block">
+              <img src="./assets/bifraction_diagram_rho_200_320.png" alt="bifraction_diagram_rho_200_320">
+            </div>
+          </div>
+
+          <div class="simulation-block">
+            <p>
+              同样的，通过放大 $99.524 \lt \rho \lt 100.795$ 等这些区域，我们也能得到相似的结论。
+            </p>
+            <div class="img-block">
+              <img src="./assets/bifraction_diagram_rho_90_102.png" alt="bifraction_diagram_rho_90_102">
+            </div>
+            <p>
+              这里也不展开讲解了，这也同样展现了“倍周期分岔是通往混沌的一种重要方式”。值得一提的是这里出现了三的倍数的极值点，通过自行模拟，可以发现这其实是形状更加奇怪的极限环:)。
             </p>
           </div>
 
-          <h4><span class="title-span">2.7.3</span> $\rho \gt 313 $ </h4>
+          <h3><span class="title-span">2.8</span> $\rho \gt 313 $ </h3>
           <p>
             当 $\rho$ 充分大，特别的，当 $\rho \gt 313 $ 时，动力学系统再次变的简单。
           </p>
@@ -537,7 +685,7 @@
             <p>
               以下是参考例题 9.5.2 对 $ \rho = 350.0 $ 的仿真：
               <br/>
-              <button id="preset-rho35000-scatter" onclick="presetParams(350,'scatter');">&rho; = 350.0</button>
+              <button id="preset-rho35000-scatter" onclick="presetParams(10, 8/3, 350,'scatter');">&rho; = 350.0</button>
             </p>
           </div>
           <p>
@@ -545,7 +693,7 @@
           </p>
           <div class="simulation-block">
             <p>
-              习题 9.5.5: 考虑 $\rho \rightarrow \infty$ 时的 lorenz 系统，利用某种方式取极限，可以使方程中的所有耗散项消失 [Robbins, 1979, Sparrow, 1981]。
+              习题 9.5.5: 考虑 $\rho \rightarrow \infty$ 时的 Lorenz 系统，利用某种方式取极限，可以使方程中的所有耗散项消失 [Robbins, 1979, Sparrow, 1981]。
             </p>
 
             <div>
@@ -561,7 +709,7 @@
                 $$
               </p>
               <p style="padding-left: 2em;">
-                解：由于洛伦兹方程中只有二阶项，我们考虑如下变量变换：
+                解：由于洛伦兹方程中只有二阶项，我们考虑如下二阶的变量变换：
                 $$
                 \begin{aligned}
                   X&=x_0+x\left(a_0+a_1\epsilon + a_2 \left(\epsilon \right)^2 \right) \\ 
@@ -642,7 +790,7 @@
 
             <div>
               <p style="text-indent: -1em; padding-left: 1em;">
-                (d) 从物理的角度解释为什么当 $\rho$ 达到一定阈值时，或许能预见 lorenz 系统会出现一些保守特征。
+                (d) 从物理的角度解释为什么当 $\rho$ 达到一定阈值时，或许能预见 Lorenz 系统会出现一些保守特征。
               </p>
               <p style="padding-left: 2em;">
                 解：参数 $\rho$ 为一个比率，没有量纲，分子代表外界驱动能力，分母代表系统内耗散（如水车中的水泄漏和阻尼），当 $\rho$ 趋近于无穷，系统耗散在相对输入的层面上接近于0，系统就可能表现出保守特征。
@@ -651,7 +799,7 @@
 
             <div>
               <p style="text-indent: -1em; padding-left: 1em;">
-                (e) 利用数值方法求解新系统。它有什么长期行为？是否与 $\rho$ 足够大时的 lorenz 系统的行为一致？
+                (e) 利用数值方法求解新系统。它有什么长期行为？是否与 $\rho$ 足够大时的 Lorenz 系统的行为一致？
               </p>
               <p style="padding-left: 2em;">
                 解：数值模拟：（可以使用任何 Presets 或使用 Params 面板的 Reset Params 切换回 Lorenz 方程）
@@ -662,10 +810,84 @@
                 <button id="new-sys-preset" onclick="setValueTriggerInput('option', this.id)"> New System - Selected </button>
               </p>
               <p style="padding-left: 2em;">
-                其中鞍状的解与 $\rho$ 较大时 lorenz 系统的唯一极限环很相似，有类似的周期行为。
+                注意到，耗散项消失后，新系统是保守的，也就是系统有无数闭轨，而 Lorenz 系统尽管 $\rho$ 很大，但依然存在耗散，只有一个全局吸引的极限环。但新系统中的鞍状解与 $\rho$ 较大时 Lorenz 系统的唯一极限环很相似，有类似的周期行为。
               </p>
             </div>
           </div>
+        </div>
+
+        <h2><span class="title-span">3.</span> Knot Theory, Topology & Kneading Theory</h2>
+        <div>
+          <p>
+            对于其他的参数空间，情况都是非常复杂的，这里由于时间与数学能力的限制，不再展开讨论。但是，我们可以通过一些简单的例子来感受一下这些复杂的情况。
+          </p>
+          <p>
+            在讨论 $\sigma = 10, \beta=\frac{8}{3}$ 的同宿分岔的时候我们给出过一张图片：
+          </p>
+          <div class="img-block">
+            <img src="./assets/homoclinic_bifurcation.png" alt="homoclinic_bifurcation", style="width: 70%;">
+          </div>
+          <p>
+            在那之后我们讨论了 Hopf 分岔，即上图图(c)中的两个不稳定极限环与稳定不动点的合并过程。那我们有没有想过，在 Hopf 分岔后，图中红色和橙色的轨线（原点的不稳定流形）变成了什么？实际上他们成为了两个不稳定不动点的稳定流形。
+          </p>
+          <div class="img-block">
+            <img src="./assets/knot_trefoil.png" alt="knot_trefoil", style="width: 70%;">
+          </div>
+          <p>
+            那么这里又出现了一个问题，在参数变化时，这两个流形的形状，或者说“拓扑结构”是一致的么？答案是否定的。随着参数变化，这两个流形的结构会发生根本的变化。
+          </p>
+          <p>
+            例如分别在
+            $$
+            \begin{aligned}
+            \sigma &= 10.1673, \beta=\frac{8}{3}, \rho=30.8680 \\
+            \sigma &= 11.8279, \beta=\frac{8}{3}, \rho=85.0292 \\
+            \sigma &= 12.9661, \beta=\frac{8}{3}, \rho=164.1376
+            \end{aligned}
+            $$
+            时，这两个流形的拓扑结构就完全不同。
+          </p>
+          <p>
+            当参数为后两组时，它们如下图所示：
+          </p>
+          <div class="img-block">
+            <img src="./assets/knot_figure_eight.png" alt="knot_figure_eight", style="width: 70%;">
+            <img src="./assets/knot_52.png" alt="knot_52", style="width: 70%;">
+          </div>
+          <p>这些结有自己的名称：$S^3 \text{(Trefoil Knot)}$、 $\text{Figure Eight Knot}$、 $5_2 \text{ Knot}$</p>
+          <p>
+            这里涉及到对参数空间的 T-Point 的分析、结理论（Knot Theory）以及许多拓扑学的知识，这里不再展开讨论。许多研究表明，T-Point 是动力系统的核心之一，且当参数经过 T-Point 时，系统的拓扑结构会随着发生根本的变化，详见[#]（以上图片也来源于此）。
+          </p>
+          <div class="simulation-block">
+            <p>
+              以下是对这些结的模拟：（注意因为数值模拟精度以及初值选取的原因，这些解最后并不会停留在不稳定不动点，但依然可以观察一开始一段时间的轨迹来观察这些结，可以使用暂停来方便地长时间观察）
+            </p>
+            <p>
+              <button id="knot-t" onclick="presetParams(10.1673, 8/3, 30.8680,'preset',[[0.001,0.001,0],[-0.001,-0.001,0]]);">&sigma; = 10.1673, &beta; = 8/3, &rho; = 30.8680</button><br/>
+              <button id="knot-t" onclick="presetParams(11.8279, 8/3, 85.0292,'preset',[[0.001,0.001,0],[-0.001,-0.001,0]]);">&sigma; = 11.8279, &beta; = 8/3, &rho; = 85.0292</button><br/>
+              <button id="knot-t" onclick="presetParams(12.9661, 8/3, 164.1376,'preset',[[0.001,0.001,0],[-0.001,-0.001,0]]);">&sigma; = 12.9661, &beta; = 8/3, &rho; = 164.1376</button>
+            </p>
+          </div>
+          <p>
+            由此看来，整个参数空间是十分复杂的，有研究[#]就也通过 Kneading Theory 对 $\rho - \sigma$ 平面做了细致的探索。他们也得到了如下瑰丽的图像，每个颜色区域都是拓扑等价而与周围颜色不同的结构。
+          </p>
+          <div class="img-block">
+            <img src="./assets/kneading_theory.png" alt="kneading_theory", style="width: 70%;">
+          </div>
+        </div>
+
+        <h2><span class="title-span">4.</span> Summary</h2>
+        <div>
+          <p>
+            总的来说，通过本次作业，我通过数值模拟与少许解析的方式，结合大量资料，对 Lorenz 系统的动力学行为有了更直观的认识与更深入的了解，也对混沌现象有了更深刻的认识。
+          </p>
+        </div>
+
+        <h2><span class="title-span">5.</span> Reference</h2>
+        <div>
+          <p>
+            
+          </p>
         </div>
       </div>
     </div>
