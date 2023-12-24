@@ -32,3 +32,17 @@ I fixed some problems and add some features to the original project:
     - Some feature needed in the assignment.
 - Fixed some problems:
   - Wrong binding of the param 'rho', etc.
+
+## run
+
+```bash
+npm install
+npx vite # using vite
+```
+
+或
+
+```bash
+npm install
+npm start # using electron
+```

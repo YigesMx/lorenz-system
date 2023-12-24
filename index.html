@@ -142,9 +142,6 @@
         </li>
       </ul>
       <h5>
-        <a href="https://github.com/skeeto/lorenz-webgl">Original Repository</a>
-      </h5>
-      <h5>
         <a href="#">Source Repository</a>
       </h5>
     </div>
@@ -354,10 +351,10 @@
             当 $\rho = 13.926$ 时，原点的两个不稳定流形由稳定地被吸引到同侧不动点，戏剧性地突变为两个同宿轨道，即从原点出发又回到原点，并在此时发生同宿分岔。$\rho = 13.926^+$ 时，原点的两个不稳定流形收敛到异侧的稳定不动点，并且系统同宿分岔产生两个鞍环，由书中 9.2 节所述，这是只有在大于等于三维的动力系统中会出现的一种不稳定极限环，它在一个二维流形上是稳定的，在另一个二维流形上是不稳定的，但在空间中整体看来是不稳定的，从截面来看类似一个鞍点，两个流形构成一个类似十字骨架的结构。
           </p>
           <p>
-            这里对这个同宿分岔的展示可以参考以下图片，该图片来源于这个<a href="https://www.youtube.com/watch?v=-wjsjGQuFjY">视频</a>。这个视频着重讲解了这一个参数节点。
+            这里对这个同宿分岔的展示可以参考以下图片，该图片来源于这个视频<button onclick="scrollToBottom()">[1]</button>。这个视频着重讲解了这一个参数节点。
           </p>
           <div class="img-block">
-            <img src="./assets/homoclinic_bifurcation.png" alt="homoclinic_bifurcation", style="width: 70%;">
+            <img src="./assets/homoclinic_bifurcation.png" alt="homoclinic_bifurcation" style="width: 70%;">
           </div>
 
           <h3><span class="title-span">2.5</span> $13.926 \lt \rho \lt \rho_H = 24.74 $ </h3>
@@ -612,7 +609,7 @@
               正如课堂上所讲，倍周期分岔现象也被认为是奇怪吸引子产生的一种重要方式，也是系统混沌的一种重要外在表现。
             </p>
             <p>
-              例如 Rossler 系统走向混沌的过程，也是随着参数连续变化，系统中的一个极限环不断发生倍周期分岔而产生了奇怪吸引子。上面直观理解倍周期分岔的图片的来源，以及倍周期分岔和 Rossler 系统的简单展示都可以见以下这篇<a href="https://www.zhihu.com/question/68229746">文章</a>。我们后来提到的 Lorenz Map一维映射也是如此，这也将在稍微作一些分析。
+              例如 Rossler 系统走向混沌的过程，也是随着参数连续变化，系统中的一个极限环不断发生倍周期分岔而产生了奇怪吸引子。上面直观理解倍周期分岔的图片的来源，以及倍周期分岔和 Rossler 系统的简单展示都可以见以下这篇文章<button onclick="scrollToBottom()">[5]</button>。我们后来提到的 Lorenz Map一维映射也是如此，这也将在稍微作一些分析。
             </p>
             <p>
               这里是对 Rossler 系统的简单可视化：（不可调参，可通过 reset-params 或选取别的 preset 重置为 lorenz 系统）
@@ -929,13 +926,13 @@
             在讨论 $\sigma = 10, \beta=\frac{8}{3}$ 的同宿分岔的时候我们给出过一张图片：
           </p>
           <div class="img-block">
-            <img src="./assets/homoclinic_bifurcation.png" alt="homoclinic_bifurcation", style="width: 70%;">
+            <img src="./assets/homoclinic_bifurcation.png" alt="homoclinic_bifurcation" style="width: 70%;">
           </div>
           <p>
             在那之后我们讨论了 Hopf 分岔，即上图图(c)中的两个不稳定极限环与稳定不动点的合并过程。那我们有没有想过，在 Hopf 分岔后，图中红色和橙色的轨线（原点的不稳定流形）变成了什么？实际上他们成为了两个不稳定不动点的稳定流形。
           </p>
           <div class="img-block">
-            <img src="./assets/knot_trefoil.png" alt="knot_trefoil", style="width: 70%;">
+            <img src="./assets/knot_trefoil.png" alt="knot_trefoil" style="width: 70%;">
           </div>
           <p>
             那么这里又出现了一个问题，在参数变化时，这两个流形的形状，或者说“拓扑结构”是一致的么？答案是否定的。随着参数变化，这两个流形的结构会发生根本的变化。
@@ -955,12 +952,12 @@
             当参数为后两组时，它们如下图所示：
           </p>
           <div class="img-block">
-            <img src="./assets/knot_figure_eight.png" alt="knot_figure_eight", style="width: 70%;">
-            <img src="./assets/knot_52.png" alt="knot_52", style="width: 70%;">
+            <img src="./assets/knot_figure_eight.png" alt="knot_figure_eight" style="width: 70%;">
+            <img src="./assets/knot_52.png" alt="knot_52" style="width: 70%;">
           </div>
           <p>这些结有自己的名称：$S^3 \text{(Trefoil Knot)}$、 $\text{Figure Eight Knot}$、 $5_2 \text{ Knot}$</p>
           <p>
-            这里涉及到对参数空间的 T-Point 的分析、结理论（Knot Theory）以及许多拓扑学的知识，这里不再展开讨论。许多研究表明，T-Point 是动力系统的核心之一，且当参数经过 T-Point 时，系统的拓扑结构会随着发生根本的变化，详见 <a href="#refs">[3]</a> （以上图片也来源于此）。
+            这里涉及到对参数空间的 T-Point 的分析、结理论（Knot Theory）以及许多拓扑学的知识，这里不再展开讨论。许多研究表明，T-Point 是动力系统的核心之一，且当参数经过 T-Point 时，系统的拓扑结构会随着发生根本的变化，详见<button onclick="scrollToBottom()">[3]</button>（以上图片也来源于此）。
           </p>
           <div class="simulation-block">
             <p>
@@ -973,10 +970,10 @@
             </p>
           </div>
           <p>
-            由此看来，整个参数空间是十分复杂的，有研究 <a href="#refs">[7]</a>就也通过 Kneading Theory 对 $\rho - \sigma$ 平面做了细致的探索。他们也得到了如下瑰丽的图像，每个颜色区域都是拓扑等价而与周围颜色不同的结构，这里不再进行展开。
+            由此看来，整个参数空间是十分复杂的，有研究<button onclick="scrollToBottom()">[7]</button>就也通过 Kneading Theory 对 $\rho - \sigma$ 平面做了细致的探索。他们也得到了如下瑰丽的图像，每个颜色区域都是拓扑等价而与周围颜色不同的结构，这里不再进行展开。
           </p>
           <div class="img-block">
-            <img src="./assets/kneading_theory.png" alt="kneading_theory", style="width: 70%;">
+            <img src="./assets/kneading_theory.png" alt="kneading_theory" style="width: 70%;">
           </div>
         </div>
 
@@ -1061,6 +1058,13 @@
     </div>
     
     <canvas id="lorenz"></canvas>
+
+    <script>
+      function scrollToBottom() {
+          var element = document.getElementById('refs');
+          element.scrollIntoView(false);  // false 表示滚动到元素的底部
+      }
+    </script>
   </body>
 </html>
   
