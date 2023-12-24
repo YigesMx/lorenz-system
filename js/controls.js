@@ -343,9 +343,13 @@ Controls.prototype.toggle_heads = function() {
 // Params
 
 Controls.prototype.use_lorenz = function() {
-    this.lorenz.params.use_lorenz = true;
+    this.lorenz.params.use = 0;
 };
 
 Controls.prototype.use_new_sys = function() {
-    this.lorenz.params.use_lorenz = false;
+    this.lorenz.params.use = 1;
+};
+
+Controls.prototype.use_rossler = function() {
+    this.lorenz.params.use = 2;
 };

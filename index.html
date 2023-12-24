@@ -189,7 +189,7 @@
         </div>
         <h2><span class="title-span">0.</span> 前言</h2>
         <p>
-          本笔记主要根据《Nonlinear Dynamics and Chaos With Applications to Physics, Biology, Chemistry, and Engineering》(Steven H. Strogatz) 一书中第五章以及相关的内容，讨论 Lorenz 方程的参数空间，以及参数对系统的影响。
+          本笔记主要根据《Nonlinear Dynamics and Chaos With Applications to Physics, Biology, Chemistry, and Engineering》(Steven H. Strogatz) 一书中第五章以及相关的内容，讨论 Lorenz 方程的参数空间，并提出一些有趣的想法。
         </p>
         <p>
           笔者也尝试过使用 Mathematica 或其他数值/符号计算软件对 Lorenz 方程进行分析，但这些软件本身大部分局限于 CPU 绘制，在仿真的实时性、交互性上较差，若要使用 GPU 绘制，又需要通过 C/C++，使用 CUDA 或 OpenGL 接口从零开始编写，重新学习这些数值或符号计算软件与这些图形接口的配合十分复杂。于是笔者想到了结合正在学习的另一门计算机图形学的课程，通过使用 JS 编写仿真程序并通过使用  GLSL 的 WebGL 调用 GPU 来进行并行的实时绘制，实现实时的仿真和交互。本笔记的主要内容就是基于这个想法与检索到的开源仓库，经过大量的修改完善完成的。
@@ -274,7 +274,7 @@
             这张图片简单地给出了当 $0 \leq \rho \leq 28$ 时系统所发生的一些“简单的分岔”与系统所处于的整体状态，也是我们下面首先分析的参数范围。
           </p>
           <p>
-            然而对于更广的参数范围，我们可以通过数值的方法来得到更广的参数范围的“类分岔图”，例如下面这张图片：
+            然而对于更广的参数范围，我们可以通过数值的方法来得到更广的参数范围的“类分岔图”，或者类比于 Logistic Map，我们称其为轨线图，如下面这张图片：
           </p>
           <div class="img-block">
             <img src="./assets/bifraction_diagram_rho_0_330.png" alt="bifraction_diagram_rho_0_330">
@@ -333,6 +333,9 @@
             $$
             并且此后原点变为一个不稳定的不动点。
           </p>
+          <p>
+            但注意，此后任意随机的初始解依然会向一个固定的范围内移动，再在这个区域内进行活动。这样说比较含糊，习题 9.2.2 对此作了研究，这里限于篇幅不再详细分析。简单来说，任意参数的 lorenz 系统的任意初值解最终都会被限制到一个椭球区域内（与三个系统参数相关），无论这些解最终收敛与否，甚至于出现后面分析的各种戏剧性状态，它们都一定会先运动到这个椭球区域内，在一个足够宏观的视角，看起来就像所有解都被吸引到了一个小椭球内。所以换句话说，被原点排斥的解也一定不会跑到无穷远的地方去，这可以结合后面提到的体积收缩和无不稳定极限环一起来理解看待。
+          </p>
 
           <h3><span class="title-span">2.3</span> $1 \lt \rho \lt 13.926$ </h3>
           <p>
@@ -348,7 +351,7 @@
 
           <h3><span class="title-span">2.4</span> $\rho = 13.926$ </h3>
           <p>
-            当 $\rho = 13.926$ 时，系统发生同宿分岔，$\rho = 13.926^+$ 时，系统产生两个鞍环，由书中 9.2 节所述，这是只有在大于等于三维的动力系统中会出现的一种不稳定极限环。
+            当 $\rho = 13.926$ 时，原点的两个不稳定流形由稳定地被吸引到同侧不动点，戏剧性地突变为两个同宿轨道，即从原点出发又回到原点，并在此时发生同宿分岔。$\rho = 13.926^+$ 时，原点的两个不稳定流形收敛到异侧的稳定不动点，并且系统同宿分岔产生两个鞍环，由书中 9.2 节所述，这是只有在大于等于三维的动力系统中会出现的一种不稳定极限环，它在一个二维流形上是稳定的，在另一个二维流形上是不稳定的，但在空间中整体看来是不稳定的，从截面来看类似一个鞍点，两个流形构成一个类似十字骨架的结构。
           </p>
           <p>
             这里对这个同宿分岔的展示可以参考以下图片，该图片来源于这个<a href="https://www.youtube.com/watch?v=-wjsjGQuFjY">视频</a>。这个视频着重讲解了这一个参数节点。
@@ -477,13 +480,13 @@
           </p>
           <div class="simulation-block">
             <p>
-              例如，以下是对 $\rho = 24.4 + 1.5 \cdot\sin\left( \omega t \right)$ 的全局随机仿真结果：
+              例如，以下是对 $\rho = 24.4 + 1.5 \cdot\sin\left( \omega t \right)$ 的初值为 $(7, 7, 22.9)$ 的模拟结果：（建议在左侧面板延长轨迹拖尾 tail 观察）
               <br/>
-              <button id="preset-rho2404-scatter-disturb" onclick="presetParams(10, 8/3, 24.4,'scatter-disturb');controls.enable_ticker_timer();">&rho; = 24.4 + 1.5sin(wt)</button>
+              <button id="preset-rho2404-scatter-disturb" onclick="presetParams(10, 8/3, 24.4,'preset-disturb',[[7,7,22.9]]);controls.enable_ticker_timer();">&rho; = 24.4 + 1.5sin(wt)</button>
             </p>
           </div>
           <p>
-            从模拟结果来看，可以发现这个“滞后”是指：虽然某些时刻系统处于有稳定不动点的状态，但在后面某个时刻由于对于 $\rho$ 的扰动使得稳定不动点变为不稳定的，导致一些解在不动点周围游荡，在被吸引和排斥之间不断变化。甚至如果扰动较大，这些解会被奇怪吸引子吸引从而使得解进入永久的混沌无序的状态。
+            从模拟结果来看，可以发现这个“滞后”是指：虽然某些时刻系统处于有稳定不动点的状态，但在后面某个时刻由于对于 $\rho$ 的扰动使得稳定不动点变为不稳定的，导致一些解在不动点周围游荡，在被吸引和排斥之间不断变化。一方面，如果对 $\rho$ 或这些解的扰动较大，这些解会被奇怪吸引子吸引从而使得解进入永久的混沌无序的状态。另一方面，某些初值的解也可能缓慢地最终被吸引到不动点，当然，也会有一些解看似永远不会被吸引或排斥。
           </p>
 
           <h3><span class="title-span">2.6</span> $\rho = \rho_H = 24.74 $ </h3>
@@ -598,7 +601,7 @@
               <button id="preset-rho14750-scatter" onclick="presetParams(10, 8/3, 147.5,'scatter');">&rho; = 147.5</button>
             </p>
             <p>
-              当 $\rho$ 逐步减小至 $ \rho = 145 $ 时，系统经过了无限次上述“倍周期”分岔。分岔得到的系列极限环最终组合混杂成一个奇怪吸引子，系统呈混沌状态。
+              当 $\rho$ 逐步减小至 $ \rho = 145 $ 时，系统经过了无限次上述“倍周期”分岔。分岔得到的两个周期无限长的极限环最终组合、混杂成一个奇怪吸引子，系统呈混沌状态。
             </p>
             <p>
               以下是对 $ \rho = 145.0 $ 的仿真：
@@ -609,7 +612,12 @@
               正如课堂上所讲，倍周期分岔现象也被认为是奇怪吸引子产生的一种重要方式，也是系统混沌的一种重要外在表现。
             </p>
             <p>
-              例如 Rossler 系统走向混沌的过程，也是随着参数连续变化，系统中的一个极限环不断发生倍周期分岔而产生了奇怪吸引子。上面直观理解倍周期分岔的图片的来源，以及倍周期分岔和 Rossler 系统的简单展示都可以见以下这篇<a href="https://www.zhihu.com/question/68229746">文章</a>。
+              例如 Rossler 系统走向混沌的过程，也是随着参数连续变化，系统中的一个极限环不断发生倍周期分岔而产生了奇怪吸引子。上面直观理解倍周期分岔的图片的来源，以及倍周期分岔和 Rossler 系统的简单展示都可以见以下这篇<a href="https://www.zhihu.com/question/68229746">文章</a>。我们后来提到的 Lorenz Map一维映射也是如此，这也将在稍微作一些分析。
+            </p>
+            <p>
+              这里是对 Rossler 系统的简单可视化：（不可调参，可通过 reset-params 或选取别的 preset 重置为 lorenz 系统）
+              <br/>
+              <button id="rossler-scatter" onclick="setValueTriggerInput('option', this.id)">Rossler</button>
             </p>
             <p>
               通过下面放大开头给出的近似“分岔图”，我们也能一睹在 $\rho$ 逐步减小时，系统是如何发生倍周期分岔的。
@@ -677,6 +685,104 @@
             </p>
           </div>
 
+          <h4><span class="title-span">2.7.3</span> 一个猜想 </h4>
+
+          <p>
+            现在回过头来看这些“分岔图”，我们留意到和我们讲一维映射时提到的 Logistic Map 所呈现的分岔图有些类似，所以可以尝试从中得到一些什么类似的信息，下面我们将在直觉和数值上验证这种想法，不过首先，先回顾一下相关内容：
+          </p>
+          <p>
+            首先，我们在 Logistic Map 中，由一维映射 
+            $$
+            x_{n+1} = f(x_n) = r \cdot x_n \cdot \left( 1 - x_n \right)
+            $$
+            得到了如下系统长期演化的渐进稳态的轨线图，与我们绘制的 Lorenz 系统的“分岔图”（轨线图）非常类似：
+          </p>
+          <div class="img-block">
+              <img src="./assets/Logistic_Bifurcation_map_High_Resolution.png" alt="">
+          </div>
+          <p>
+            我们知道了他是如何描述在 $r$ 逐渐增大时，Logistic Map 是如何不断产生倍周期分岔并最终走向混沌的，如下图所示：
+          </p>
+          <div class="img-block">
+              <img src="./assets/gifs/LogisticCobwebChaos.gif" alt="">
+          </div>
+          <p>
+            其次，根据我们对 Logistic Map 的学习，我们知道，一个展开式中含有二次及以上项的一维映射，无论形状如何进行一个变换，都会在局部产生和最简单的 Logistic Map 类似的混沌现象（例如高次多项式、三角函数极值点附近等）。所以我们猜测 Lorenz 系统在某些视角下也可以得到类似的结论。
+          </p>
+          <p>
+            再者，我们还对 Lorenz 研究 $\rho = 28$ 时的系统时所用的 Lorenz Map 有一些了解。在 9.4 节我们了解到 Lorenz 使用这种映射导数绝对值大于 1 （对应一维映射特征乘子绝对值大于一）证明了系统在对应参数下是没有稳定极限环的（对应一维映射没有不动点）。这个映射定义为：
+            $$
+            z_{n+1} = f \left( z_{n} \right)
+            $$
+            其中 $z_{n}$ 为解的局部最大值点序列。我们通过大量的数值模拟可以绘制出这个映射的图像：
+          </p>
+          <div class="img-block">
+              <img src="./assets/lorenz_map_r28_zmax_zz.png" alt="">
+          </div>
+          <p>
+            最后，我们也知道 Lorenz 在每个平面上的投影都显示出了混沌特性，即降维到二维依然可以看出其混沌特性。
+          </p>
+          <div class="simulation-block">
+            <p>
+                结合以上几点，我们提出猜想：“在那些倍周期分岔的参数范围中，Lorenz 系统在某些视角下（某些降维映射，尤其是先投影到平面，再降维至一维时），依然有混沌特性，且这个映射与 Logistic Map 一样有局部的二次项特性，从而导致其和 Logistic Map 一样产生倍周期分岔并最终走向混沌。”
+            </p>
+            <p>
+                基于这个猜想，我构造了如下映射：
+                $$
+                y_{n+1} = f \left( y_{n} \right)
+                $$
+                其中 $y_{n}$ 为解的所有同向穿过 $y-z$ 平面的点（即 $x=0$ 且同向）的序列。
+            </p>
+            <p>
+                注意到我们这里其实首先构造了一个 $ \text{Poincaré} $ 映射，即首次-回归映射，然后再降维到一维。详细来说，我们首先记录了一个解首次同向穿过 $y-z$ 平面的位置，然后只保留其 $y$ 坐标，即得到了一个类似于 Lorenz 映射的一维映射。
+            </p>
+            <p>
+                然后，我们在发生了倍周期分岔的 $212 \lt \rho \lt 313$ 区间（其他区间理论也可以）进行验证。并且由于Logistic Map 在 $r$ 从小到大时发生了倍周期分岔，而 Lorenz 系统在 $212 \lt \rho \lt 313$ 区间在 $\rho$ 由大变小时也发生了倍周期分岔，我们在这个区间从大到小采样几个点作对比分析：
+            </p>
+            <p>
+                $ \rho = 340 $ 时，我们得到如下一维映射图像：（以下代码均见附件）
+            </p>
+            <div class="img-block">
+                <img src="./assets/lorenz_map_r340_x0_yy.png" alt="">
+            </div>
+            <p>
+                与 Lorenz Map 类似，我们将随机采样模拟的映射图进行一些近似。由于对称性，我们仅需要关注第一象限。可以隐约看到两条像三次曲线的曲线，且与 $x_{n+1} = x_n$ 交点处斜率绝对值小于1，即线性化后这个一维映射在交点处为一个稳定的不动点，这与降维前的 Lorenz 系统的此时有全局吸引的唯一极限环是一致的。类比 Logistic Map，这里的图像看起来仅仅对应 $r$ 小于 $1$ 的情况。
+            </p>
+            <p>
+                $ \rho = 300 $ 时，我们得到如下一维映射图像：
+            </p>
+            <div class="img-block">
+                <img src="./assets/lorenz_map_r300_x0_yy.png" alt="">
+            </div>
+            <p>
+                根据之前的分析，此时系统在 $\rho$ 减小过程中刚发生一次分岔，产生了两个稳定极限环。而图中映射与 $x_{n+1} = x_n$ 交点增加至了三个，斜率依次 小于1、大于1、小于1，即线性化后这个一维映射在交点处分别为一个稳定的不动点、一个不稳定的不动点、一个稳定的不动点，这与降维前的 Lorenz 系统的此时有两个稳定的极限环（中间的点被牵引至两个极限环中的一个）也是一致的。
+            </p>
+            <p>
+                且与 Logistic Map 类似，这里的图像的样子看起来仅仅对应 $r$ 刚刚大于 $1$ 的情况，情况并没有变的复杂。但我们能想象到，随着 $\rho$ 的进一步减小，这个映射的图像会向中央继续压缩，直到与 $x_{n+1} = x_n$ 的一些交点来到映射曲线极值点的另一侧，产生与上面 Logistic Map 产生倍周期分岔时类似的图像。数值模拟也证实了这一点。
+            </p>
+            <p>
+                以下是对 $ \rho = 230 $ 的一维映射图像：
+            </p>
+            <div class="img-block">
+                <img src="./assets/lorenz_map_r230_x0_yy.png" alt="">
+            </div>
+            <p>
+                与我们预期的一样，这里的图像已经开始出现了类似 Logistic Map 产生倍周期分岔时的类似图像。且随着 $\rho$ 的进一步减小（$r$ 逐步增大到 $r_{\infty}$），情况会更加严重：
+            </p>
+            <p>
+                以下是对 $ \rho = 220 $ 的一维映射图像：
+            </p>
+            <div class="img-block">
+                <img src="./assets/lorenz_map_r220_x0_yy.png" alt="">
+            </div>
+            <p>
+                在这些图上，我们用类似一维映射时用到的蛛网模型进行模拟，也能得到类似于 Logistic Map 产生的混沌结果（没有周期的无规则行为）。由于时间限制，这里没有进一步的数值和解析验证，这里提供一个思路：对图中的点作回归，并进行一维映射的模拟，来进行 Logistic Map 的相似性对比。
+            </p>
+            <p>
+                通过以上探究，我们确实发现 Lorenz 系统在一些范围内的倍周期特性和 Logistic Map 的倍周期特性有着惊人的相似性，这样或许意味着关于“周期三意味着混沌”等种种结论可以在 Lorenz 系统中得到类似的应用与验证。
+            </p>
+          </div>
+
           <h3><span class="title-span">2.8</span> $\rho \gt 313 $ </h3>
           <p>
             当 $\rho$ 充分大，特别的，当 $\rho \gt 313 $ 时，动力学系统再次变的简单。
@@ -712,12 +818,11 @@
                 解：由于洛伦兹方程中只有二阶项，我们考虑如下二阶的变量变换：
                 $$
                 \begin{aligned}
-                  X&=x_0+x\left(a_0+a_1\epsilon + a_2 \left(\epsilon \right)^2 \right) \\ 
-                  Y&=y_0+y\left(b_0+b_1\epsilon + b_2 \left(\epsilon \right)^2 \right) \\ 
-                  Z&=z_0+z\left(c_0+c_1\epsilon + c_2 \left(\epsilon \right)^2 \right)
+                  X&=a_0 x + a_1\epsilon x + a_2 \left(\epsilon \right)^2 x \\ 
+                  Y&=b_0 y + b_1\epsilon y + b_2 \left(\epsilon \right)^2 y \\ 
+                  Z&=c_0 z + c_1\epsilon z + c_2 \left(\epsilon \right)^2 z
                 \end{aligned}
                 $$
-    
                 依照题意，将变量变换后代入洛仑兹方程中后我们需满足当 $\epsilon \rightarrow 0$ 时，方程有如下形式：
                 $$
                 \begin{aligned}
@@ -726,8 +831,7 @@
                   {Z}' &= XY \\
                 \end{aligned}
                 $$
-    
-                于是我们解得
+                于是（经过一些稍显复杂的待定系数求解过程）我们解得
                 $$
                 \begin{aligned}
                   X &= \epsilon x \\
@@ -856,7 +960,7 @@
           </div>
           <p>这些结有自己的名称：$S^3 \text{(Trefoil Knot)}$、 $\text{Figure Eight Knot}$、 $5_2 \text{ Knot}$</p>
           <p>
-            这里涉及到对参数空间的 T-Point 的分析、结理论（Knot Theory）以及许多拓扑学的知识，这里不再展开讨论。许多研究表明，T-Point 是动力系统的核心之一，且当参数经过 T-Point 时，系统的拓扑结构会随着发生根本的变化，详见[#]（以上图片也来源于此）。
+            这里涉及到对参数空间的 T-Point 的分析、结理论（Knot Theory）以及许多拓扑学的知识，这里不再展开讨论。许多研究表明，T-Point 是动力系统的核心之一，且当参数经过 T-Point 时，系统的拓扑结构会随着发生根本的变化，详见 <a href="#refs">[3]</a> （以上图片也来源于此）。
           </p>
           <div class="simulation-block">
             <p>
@@ -869,7 +973,7 @@
             </p>
           </div>
           <p>
-            由此看来，整个参数空间是十分复杂的，有研究[#]就也通过 Kneading Theory 对 $\rho - \sigma$ 平面做了细致的探索。他们也得到了如下瑰丽的图像，每个颜色区域都是拓扑等价而与周围颜色不同的结构。
+            由此看来，整个参数空间是十分复杂的，有研究 <a href="#refs">[7]</a>就也通过 Kneading Theory 对 $\rho - \sigma$ 平面做了细致的探索。他们也得到了如下瑰丽的图像，每个颜色区域都是拓扑等价而与周围颜色不同的结构，这里不再进行展开。
           </p>
           <div class="img-block">
             <img src="./assets/kneading_theory.png" alt="kneading_theory", style="width: 70%;">
@@ -884,9 +988,30 @@
         </div>
 
         <h2><span class="title-span">5.</span> Reference</h2>
-        <div>
+        <div id="refs">
           <p>
-            
+            [1] Lorenz System Bifurcation Diagram- Exploring Parameter Space, (Apr. 17, 2021). Accessed: Dec. 08, 2023. [Online Video]. Available: https://www.youtube.com/watch?v=-wjsjGQuFjY
+          </p>
+          <p>
+            [2] N. V. Kuznetsov, T. N. Mokaev, O. A. Kuznetsova, and E. V. Kudryashova, “The Lorenz system: hidden boundary of practical stability and the Lyapunov dimension,” Nonlinear Dyn, vol. 102, no. 2, pp. 713–732, Oct. 2020, doi: 10.1007/s11071-020-05856-4.
+          </p>
+          <p>
+            [3] T. Pinsky, “On the topology of the Lorenz system,” Proceedings of the Royal Society A: Mathematical, Physical and Engineering Sciences, vol. 473, no. 2205, p. 20170374, Sep. 2017, doi: 10.1098/rspa.2017.0374.
+          </p>
+          <p>
+            [4] S. Galatolo and M. Pacifico, “Lorenz-like flows: Exponential decay of correlations for the Poincaré map, logarithm law, quantitative recurrence,” Ergodic Theory and Dynamical Systems, vol. 30, Jan. 2009, doi: 10.1017/S0143385709000856.
+          </p>
+          <p>
+            [5] “如何通俗地解释混沌理论（chaos）和分岔理论（bifurcation）？ - 知乎.” Accessed: Dec. 08, 2023. [Online]. Available: https://www.zhihu.com/question/68229746
+          </p>
+          <p>
+            [6] Richard Bertram, “Chaos,” [Online]. Available: https://www.math.fsu.edu/~bertram/lectures/Chaos.pdf
+          </p>
+          <p>
+            [7] A. M. López, “Different dynamical aspects of Lorenz system.” [Online]. Available: https://diposit.ub.edu/dspace/bitstream/2445/127423/2/memoria.pdf
+          </p>
+          <p>
+            [8] James Hateley, “The Lorenz system.” [Online]. Available: https://web.math.ucsb.edu/~jhateley/paper/lorenz.pdf
           </p>
         </div>
       </div>
@@ -937,5 +1062,5 @@
     
     <canvas id="lorenz"></canvas>
   </body>
-  </html>
+</html>
   

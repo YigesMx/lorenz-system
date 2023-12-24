@@ -55,6 +55,7 @@ canvas {
     top: 0;
     right: 0;
 
+    /* width: 40%; */
     width: 40%;
     height: 62%;
 
@@ -191,6 +192,27 @@ img {
     opacity: 1;
 }
 
+button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    padding: 3px 10px;
+    margin: 3px;
+    cursor: pointer;
+    font-size: 70%;
+    font-weight: lighter;
+    font-family: monospace;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+button:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 .img-block {
     text-align: center;
     opacity: 1;
@@ -202,6 +224,10 @@ img {
 
     padding: 2px;
     margin-top: 10px;
+}
+
+.simulation-block button{
+    /* display: block; */
 }
 
 .input-box {

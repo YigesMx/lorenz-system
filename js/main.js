@@ -270,6 +270,24 @@ window.addEventListener('load', function() {
             controls.add([10, 20, 10]);
 
             controls.rotate(0.005);
+        }else if (option.value === 'rossler-scatter') {
+
+            controls.reset_params();
+            controls.set_rho(10);
+            flush_param_inputs(lorenz);
+
+            controls.use_rossler();
+            lorenz.display.scale = 1 / 50;
+            controls.reset_view();
+            controls.persp();
+            controls.disable_ticker_timer();
+
+            controls.clear();
+
+            for (var i = 1; i <= 64; i++)
+                controls.add();
+
+            controls.rotate(0.005);
         }
     });
 });
@@ -307,13 +325,15 @@ function presetParams(sigma, beta, rho, method, preset_samples){
     }else if (method === 'scatter') {
         for (var i = 1; i <= 32; i++)
             controls.add();
-    }else if (method === 'scatter-disturb'){
+    }else if (method === 'preset-disturb'){
         lorenz.params.rho_disturb_A = 1.5;
         lorenz.params.rho_disturb_w = 0.1;
         flush_param_inputs(lorenz);
 
-        for (var i = 1; i <= 32; i++)
-            controls.add();
+        var len = preset_samples.length;
+        for (var i = 0; i < len; i++) {
+            controls.add(preset_samples[i]);
+        }
     }else if (method === 'single') {
         controls.add();
     }else if (method === 'preset') {
