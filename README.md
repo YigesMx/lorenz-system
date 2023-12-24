@@ -1,5 +1,7 @@
 # Lorenz System Visualizer
 
+[Github Pages](https://yigesmx.github.io/lorenz-system/)
+
 This is an modified interactive visualizer of [Lorenz system](https://en.wikipedia.org/wiki/Lorenz_system). 
 
 This project is based on [skeeto/lorenz-webgl](https://github.com/skeeto/lorenz-webgl), thanks to the author for the great work.
